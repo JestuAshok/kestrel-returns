@@ -1,0 +1,184 @@
+{
+  "n_total": 10504,
+  "overall_rate": 0.11424,
+  "payment": {
+    "cod": {
+      "rate": 0.18813,
+      "count": 3152
+    },
+    "emi": {
+      "rate": 0.09077,
+      "count": 1278
+    },
+    "prepaid_card": {
+      "rate": 0.08825,
+      "count": 2153
+    },
+    "prepaid_upi": {
+      "rate": 0.07677,
+      "count": 3921
+    },
+    "prepaid_all": {
+      "rate": 0.08256,
+      "count": 7352
+    }
+  },
+  "shield": {
+    "N": {
+      "rate": 0.0938,
+      "count": 8177
+    },
+    "Y": {
+      "rate": 0.18608,
+      "count": 2327
+    }
+  },
+  "history": {
+    "0": {
+      "rate": 0.09058,
+      "count": 9119
+    },
+    "1": {
+      "rate": 0.19942,
+      "count": 1038
+    },
+    "2": {
+      "rate": 0.40807,
+      "count": 223
+    },
+    "3+": {
+      "rate": 0.6129,
+      "count": 124
+    },
+    "1+": {
+      "rate": 0.27004,
+      "count": 1385
+    }
+  },
+  "delivery": {
+    "long": {
+      "rate": 0.15562,
+      "count": 3997
+    },
+    "short": {
+      "rate": 0.07891,
+      "count": 4448
+    },
+    "mid": {
+      "rate": 0.11025,
+      "count": 2059
+    }
+  },
+  "discount": {
+    "high": {
+      "rate": 0.15114,
+      "count": 2276
+    },
+    "low": {
+      "rate": 0.10404,
+      "count": 8228
+    }
+  },
+  "family": {
+    "Air Fryer": {
+      "rate": 0.12005,
+      "count": 1516,
+      "other_rate": 0.11326,
+      "other_count": 8988
+    },
+    "Ceiling Fan": {
+      "rate": 0.06662,
+      "count": 1531,
+      "other_rate": 0.12237,
+      "other_count": 8973
+    },
+    "Induction Cooktop": {
+      "rate": 0.08266,
+      "count": 1476,
+      "other_rate": 0.11941,
+      "other_count": 9028
+    },
+    "Mixer Grinder": {
+      "rate": 0.06754,
+      "count": 1451,
+      "other_rate": 0.12173,
+      "other_count": 9053
+    },
+    "Robot Vacuum": {
+      "rate": 0.19498,
+      "count": 1554,
+      "other_rate": 0.10022,
+      "other_count": 8950
+    },
+    "Room Heater": {
+      "rate": 0.11672,
+      "count": 1525,
+      "other_rate": 0.11382,
+      "other_count": 8979
+    },
+    "Water Purifier": {
+      "rate": 0.14817,
+      "count": 1451,
+      "other_rate": 0.1088,
+      "other_count": 9053
+    }
+  },
+  "channel": {
+    "app": {
+      "rate": 0.10748,
+      "count": 3582,
+      "other_rate": 0.11774,
+      "other_count": 6922
+    },
+    "marketplace": {
+      "rate": 0.13559,
+      "count": 2869,
+      "other_rate": 0.10622,
+      "other_count": 7635
+    },
+    "partner_outlet": {
+      "rate": 0.09091,
+      "count": 1287,
+      "other_rate": 0.1175,
+      "other_count": 9217
+    },
+    "web": {
+      "rate": 0.11171,
+      "count": 2766,
+      "other_rate": 0.11515,
+      "other_count": 7738
+    }
+  },
+  "gift": {
+    "gift": {
+      "rate": 0.16529,
+      "count": 726
+    },
+    "nongift": {
+      "rate": 0.11045,
+      "count": 9778
+    }
+  },
+  "price": {
+    "high": {
+      "rate": 0.18485,
+      "count": 2007
+    },
+    "not_high": {
+      "rate": 0.09756,
+      "count": 8497
+    },
+    "low": {
+      "rate": 0.08512,
+      "count": 4476
+    },
+    "not_low": {
+      "rate": 0.13587,
+      "count": 6028
+    },
+    "mid": {
+      "rate": 0.11142,
+      "count": 4021
+    }
+  }
+}

@@ -1,0 +1,127 @@
+
+================================================================================
+ KESTREL HOME APPLIANCES: DATA PREPARATION & SPLITS REPORT
+================================================================================
+
+Execution timestamp: 2026-10-08 10:24:49
+Processed output directory: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data\processed
+Report output: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\prepare_output.txt
+
+================================================================================
+ 1. DATA LOADING, DEDUPLICATION & OCTOBER FIX
+================================================================================
+
+Building feature matrix for train using build_features()...
+Building feature matrix for test using build_features()...
+Verified: Single-row input successfully processed with identical schema.
+Saved: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data\processed\train_clean.csv (Rows: 10504, Cols: 26)
+Saved: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data\processed\test_clean.csv (Rows: 2096, Cols: 25)
+
+================================================================================
+ 2. TIME-BASED TRAIN/VAL SPLIT
+================================================================================
+
+Split specification:
+  - Fit Set: orders placed before 2026-04-01
+  - Validation Set: orders placed from 2026-04-01 to 2026-06-30
+  - Rule: Never use random splitting.
+
+                Set               Date Range  Row Count Share (%)  Returned Count Return Rate (%)
+            Fit Set 2025-04-01 to 2026-03-31       8378    79.76%             955          11.40%
+     Validation Set 2026-04-01 to 2026-06-30       2126    20.24%             245          11.52%
+Total Train (Clean) 2025-04-01 to 2026-06-30      10504   100.00%            1200          11.42%
+
+================================================================================
+ 3. SANITY CHECKS
+================================================================================
+
+
+--- 3a. Deduplication Effect & Return Rate ---
+                          Stage  Total Rows  Returned Orders Return Rate (%)
+                      Raw Train       11155             1267          11.36%
+  Deduped Train (kept CRM copy)       10504             1200          11.42%
+Difference (Dropped Duplicates)         651               67          10.29%
+
+--- 3b. Feature Matrix Exclusion Assertions ---
+PASSED: The feature matrix contains NONE of:
+  - Target/leaky columns: ['returned', 'pickup_scheduled_at', 'last_service_event_type', 'delivery_note', 'order_id']
+  - Raw ID/timestamp columns: ['customer_id', 'order_placed_at', 'sku', 'source', 'delivery_pincode']
+Total features in matrix: 24
+Feature list:
+  ['payment_mode', 'sales_channel', 'family', 'is_gift', 'promised_delivery_days', 'qty', 'discount_pct', 'warranty_months', 'shield_member', 'state', 'city', 'order_value_inr_fixed', 'list_price_inr', 'price_per_unit', 'missing_address', 'customer_prior_orders', 'customer_prior_returns', 'smoothed_customer_return_rate', 'signup_after_order', 'customer_age_days', 'days_since_launch', 'order_month', 'order_weekday', 'order_hour']
+
+--- 3c. Schema Identity & Unseen Categoricals Check ---
+PASSED: Train and test have exactly identical feature columns and ordering.
+
+Categorical Feature  Unique in Train  Unique in Test  Unseen Values in Test Count    Unseen Values
+       payment_mode                4               4                            0 None (All known)
+      sales_channel                4               4                            0 None (All known)
+             family                7               7                            0 None (All known)
+            is_gift                2               2                            0 None (All known)
+      shield_member                2               2                            0 None (All known)
+              state                8               8                            0 None (All known)
+               city               18              18                            0 None (All known)
+
+--- 3d. Temporal Causality Checks ---
+Rows with signup_date AFTER order_placed_at in Train: 1999
+
+Orders placed BEFORE product launch_date in Train: 0
+
+Test Rows with signup_date AFTER order_placed_at: 18
+Test Orders placed BEFORE product launch_date: 0
+
+--- 3e. Customer History Consistency Check (Multi-order Customers in Train) ---
+                                               Metric  Count                   Rate / Share
+               Total Customers with >1 order in Train   2970                        100.00%
+              Total Orders from Multi-order Customers   7343                69.91% of Train
+ Customers with Monotonically Increasing prior_orders   1499                         50.47%
+ Orders where prior_orders == Earlier Rows in Dataset   2163      29.46% (Exact match rate)
+Consecutive Order Pairs with delta(prior_orders) == 1    855 19.55% (Step consistency rate)
+
+--- 3f. Shield Members: Signup Date Ranges & Monthly Return Rate ---
+      Customer Segment  Total Customers Min Signup Date Max Signup Date
+    Shield Members (Y)             1999      2022-10-15      2026-08-13
+Non-Shield Members (N)             7001      2022-10-15      2026-08-14
+
+Shield Return Rate by Order Month (Report only, no conclusions):
+  month  Shield_Orders  Shield_Returns Shield_Return_Rate
+2025-04            158              33             20.89%
+2025-05            133              24             18.05%
+2025-06            167              29             17.37%
+2025-07            159              32             20.13%
+2025-08            148              24             16.22%
+2025-09            164              25             15.24%
+2025-10            163              33             20.25%
+2025-11            135              17             12.59%
+2025-12            136              30             22.06%
+2026-01            158              31             19.62%
+2026-02            161              32             19.88%
+2026-03            167              25             14.97%
+2026-04            162              38             23.46%
+2026-05            141              29             20.57%
+2026-06            175              31             17.71%
+
+--- 3g. Extreme Value Checks (discount_pct > 50, qty > 5) ---
+            Check  Train Count  Train Max Value  Test Count  Test Max Value
+discount_pct > 50            6               60           2              51
+          qty > 5            0                2           0               2
+
+Train orders with discount_pct > 50:
+ order_id      sku  qty  discount_pct  order_value_inr_fixed  returned
+KO2600279 KH-MG-03    2            54                4966.16         0
+KO2604743 KH-RH-01    1            56                 879.56         1
+KO2604764 KH-WP-02    1            52                7199.52         0
+KO2604966 KH-AF-01    1            60                2079.60         0
+KO2608720 KH-CF-02    1            56                1539.56         0
+KO2608810 KH-MG-03    1            60                2159.20         1
+
+Test orders with discount_pct > 50:
+ order_id      sku  qty  discount_pct  order_value_inr_fixed
+KO2610785 KH-RH-03    1            51                1652.77
+KO2611665 KH-AF-03    1            51                4298.77
+
+================================================================================
+ PREPARATION & SANITY CHECKS COMPLETED SUCCESSFULLY
+================================================================================
+
+Report written to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\prepare_output.txt

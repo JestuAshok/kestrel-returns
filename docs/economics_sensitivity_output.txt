@@ -1,0 +1,97 @@
+
+================================================================================
+ KESTREL RETURNS: CONFIRMATION CALL SENSITIVITY AUDIT
+================================================================================
+
+Timestamp: 2026-10-07 14:11:07
+Base Parameters:
+  - Operational Scale: 700 orders / month
+  - Confirmation Call Cost: Rs 45 per completed call
+  - Return Processing Cost: Rs 1,150 (policy baseline)
+  - Base Prevention Rate: 35% on completed calls
+
+Loaded 5634 out-of-sample Logistic Regression predictions.
+Monthly scaling multiplier: 700 / 5634 = 0.124246
+
+================================================================================
+ 1. CALL PREVENTION RATE SENSITIVITY & BREAK-EVEN PROBABILITY
+================================================================================
+
+
+--- Net Monthly Rupees across Thresholds by Prevention Rate ---
+Prevention Rate Break-even Prob (p*)  Net INR @ 8%  Net INR @ 10%  Net INR @ 12%  Net INR @ 15%  Net INR @ 20%  Net INR @ 25%  Net INR @ 30%
+            10%               39.13%       -6676.3        -4793.4        -3537.3        -2050.1         -691.4          -67.1          305.0
+            15%               26.09%       -3090.0        -1557.1         -536.7          629.0         1473.2         1668.9         1726.7
+            20%               19.57%         496.4         1679.2         2463.8         3308.0         3637.9         3405.0         3148.4
+            25%               15.65%        4082.7         4915.5         5464.3         5987.1         5802.6         5141.0         4570.1
+            35%               11.18%       11255.4        11388.0        11465.4        11345.2        10131.9         8613.0         7413.4
+
+--- Optimal Threshold & Net Monthly Savings per Prevention Rate ---
+Prevention Rate Break-even Prob (p*) Best Threshold  Flagged Orders/Mo  Best Net INR / Month Status
+            10%               39.13%            30%               56.4                 305.0       
+            15%               26.09%            30%               56.4                1726.7       
+            20%               19.57%            20%              111.6                3637.9       
+            25%               15.65%            15%              164.6                5987.1       
+            35%               11.18%            12%              212.0               11465.4       
+
+================================================================================
+ 2. MINIMUM PREVENTION RATE FOR NON-NEGATIVE BENEFIT AT 12% THRESHOLD
+================================================================================
+
+Threshold  Total Flagged (OOS)  Flagged / Month (700 Scale)  Actual Returns in Flagged Flagged Precision Minimum Required Prevention Rate Policy Benchmark Rate Safety Margin (Buffer)
+    12.0%                 1706                        212.0                        420            24.62%                           15.89%                35.00%            +19.11% pts
+
+Finding: Even if the confirmation call prevented as few as 15.89% of returns
+(down from the ops policy benchmark of 35.0%), calling at the 12% threshold would still break even!
+
+================================================================================
+ 3. CALL COMPLETION RATE SENSITIVITY (q in {60%, 80%, 100%}) AT 12% THRESHOLD
+================================================================================
+
+Assumption: Only fraction q of flagged orders connect. The Rs 45 fee is incurred ONLY on completed calls,
+and the 35% prevention effect applies ONLY to completed calls.
+
+Call Completion Rate (q)  Flagged Orders / Month  Completed Calls / Month  Call Spend / Month (Rs)  Gross Returns Saved / Mo (Rs)  Net Rupees / Month       Status
+                     60%                   212.0                    127.2                   5723.0                        12602.2              6879.2       ROBUST
+                     80%                   212.0                    169.6                   7630.7                        16803.0              9172.3       ROBUST
+                    100%                   212.0                    212.0                   9538.3                        21003.7             11465.4 BEST (Ideal)
+
+Finding: Because expected net value per completed call is positive at threshold 12%,
+lower connection rates merely scale down the total profit proportionally, remaining highly profitable
+(+Rs 6,879.2/mo even at 60% completion).
+
+================================================================================
+ 4. RETURN COST SENSITIVITY: Rs 600 (Ritu's Figure) vs Rs 1,150 (Policy)
+================================================================================
+
+              Scenario Assumed Return Cost Break-even Prob (p*) Threshold Tested  Flagged Orders / Month  Net Rupees / Month   Status
+         Ritu's Figure              Rs 600               21.43%            12.0%                   212.0              1420.1 POSITIVE
+Operations Policy v4.1            Rs 1,150               11.18%            12.0%                   212.0             11465.4     BEST
+
+Note: If return cost is only Rs 600, break-even rises to 21.43%.
+The optimal threshold shifts to 20%, yielding +Rs 2,885.0/month.
+
+================================================================================
+ 5. MONTH-BY-MONTH STABILITY OF CALL AT 12% THRESHOLD (Nov 2025 to Jun 2026)
+================================================================================
+
+  Month  Total Orders  Flagged Orders  Flagged (700 Scale)  Returns Prevented Flagged Precision  Raw Net INR  Scaled Net INR / Mo      Status
+2025-11           698             184                184.5               14.7            22.83%       8625.0               8649.7 WORST MONTH
+2025-12           684             159                162.7               16.8            30.19%      12165.0              12449.6            
+2026-01           719             283                275.5               19.6            19.79%       9805.0               9545.9            
+2026-02           664             220                231.9               21.0            27.27%      14250.0              15022.6            
+2026-03           743             240                226.1               18.5            22.08%      10532.5               9922.9            
+2026-04           705             219                217.4               21.7            28.31%      15100.0              14992.9            
+2026-05           722             219                212.3               18.5            24.20%      11477.5              11127.8            
+2026-06           699             182                182.3               16.1            25.27%      10325.0              10339.8            
+
+Stability Assessment:
+  - Worst Performing Month: 2025-11 with Scaled Net INR of +Rs 8,649.7/month.
+  - Crucial finding: Net monthly rupees remained POSITIVE in EVERY SINGLE MONTH without exception!
+  - Month-over-month standard deviation: Rs 2,432.7.
+
+================================================================================
+ SENSITIVITY ANALYSIS COMPLETE
+================================================================================
+
+Output report saved to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\economics_sensitivity_output.txt

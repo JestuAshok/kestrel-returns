@@ -1,0 +1,75 @@
+
+================================================================================
+ KESTREL RETURNS: EXTREME RETURN HISTORY DIAGNOSTICS & CAPPING SENSITIVITY
+================================================================================
+
+Timestamp: 2026-10-07 14:45:59
+
+================================================================================
+ 1. VALUE COUNTS OF CUSTOMER PRIOR RETURNS & ORDERS DISTRIBUTION
+================================================================================
+
+Prior Returns Value Counts:
+Prior Returns Category  Train Count Train Share (%)  Test Count Test Share (%)
+                     0         9119          86.81%        1810         86.35%
+                     1         1038           9.88%         205          9.78%
+                     2          223           2.12%          51          2.43%
+                     3           82           0.78%          21          1.00%
+                     4           31           0.30%           7          0.33%
+                     5            8           0.08%           2          0.10%
+                    6+            3           0.03%           0          0.00%
+
+Prior Orders Extremes:
+  Dataset  Total Rows  Max Prior Orders  99th Percentile Prior Orders
+Train Set       10504                10                           5.0
+ Test Set        2096                 9                           5.0
+
+================================================================================
+ 2. ROWS WITH CUSTOMER PRIOR RETURNS >= 3 AND >= 4
+================================================================================
+
+                  Condition  Train Count Train Actual Return Rate  Test Count Test Share
+customer_prior_returns >= 3          124          61.29% (76/124)          30      1.43%
+customer_prior_returns >= 4           42           76.19% (32/42)           9      0.43%
+
+================================================================================
+ 3. HIGH RISK SCORE CONCENTRATION: TEST VS OUT-OF-SAMPLE BACKTEST
+================================================================================
+
+ Score Cutoff Test Orders Test Share (%) OOS Orders OOS Share (%) Share Difference
+Score >= 0.25  219 / 2096         10.45% 633 / 5634        11.24%           -0.79%
+Score >= 0.50   58 / 2096          2.77% 127 / 5634         2.25%           +0.51%
+Score >= 0.90    5 / 2096          0.24%   5 / 5634         0.09%           +0.15%
+
+================================================================================
+ 4. PROFILE OF THE 10 HIGHEST TEST SCORES
+================================================================================
+
+ order_id  score  customer_prior_returns  customer_prior_orders smoothed_customer_return_rate payment_mode list_price_inr  promised_delivery_days         family shield_member
+KO2612155 0.9829                       4                      4                        0.5056          cod       Rs 6,499                       5      Air Fryer             Y
+KO2611223 0.9645                       4                      4                        0.5056          cod       Rs 6,499                       5      Air Fryer             Y
+KO2611540 0.9470                       5                      7                        0.4625          cod      Rs 11,999                       3 Water Purifier             N
+KO2612307 0.9251                       4                      9                        0.3250          cod      Rs 20,248                       7 Water Purifier             N
+KO2611909 0.9078                       5                      7                        0.4625 prepaid_card       Rs 3,199                       8  Mixer Grinder             N
+KO2611071 0.8493                       2                      4                        0.2833          cod      Rs 20,248                       6 Water Purifier             Y
+KO2610814 0.8417                       1                      4                        0.1722          cod       Rs 5,398                       9  Mixer Grinder             Y
+KO2612028 0.8256                       1                      4                        0.1722          cod      Rs 21,999                       8   Robot Vacuum             Y
+KO2611559 0.8123                       3                      5                        0.3550 prepaid_card      Rs 21,999                       4   Robot Vacuum             Y
+KO2612240 0.8110                       3                      3                        0.4437          emi      Rs 11,999                       5 Water Purifier             Y
+
+================================================================================
+ 5. ROLLING-ORIGIN BACKTEST CAPPING SENSITIVITY (Nov 2025 - Jun 2026)
+================================================================================
+
+Evaluating effect of clipping customer_prior_returns at fixed thresholds (uncapped, 4, 3, 2).
+Capping Comparison Table:
+Cap Setting  Pooled ROC-AUC  Pooled PR-AUC  Brier Score Top Decile Mean Pred Top Decile Actual Ret Top Decile Gap  Flagged/Mo (700) Net INR / Mo (700)
+   Uncapped          0.7770         0.3856       0.0850               42.48%                40.07%         +2.41%             210.8       +Rs 11,465.7
+    Cap = 4          0.7771         0.3850       0.0850               42.50%                40.60%         +1.90%             210.0       +Rs 11,504.8
+    Cap = 3          0.7766         0.3815       0.0851               42.53%                40.60%         +1.92%             209.6       +Rs 11,321.6
+    Cap = 2          0.7758         0.3805       0.0853               42.56%                40.96%         +1.60%             210.3       +Rs 11,438.1
+
+================================================================================
+ DIAGNOSTICS COMPLETE
+================================================================================
+

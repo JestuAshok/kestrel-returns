@@ -1,0 +1,220 @@
+================================================================================
+KESTREL RETURNS RISK API EXAMPLE CALLS
+================================================================================
+
+1. PREDICTION CALL (HIGH-RISK ORDER: KO2611540)
+--------------------------------------------------------------------------------
+Command:
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "order_id": "KO2611540",
+    "order_placed_at": "2026-08-15 20:22",
+    "customer_id": "KC101160",
+    "sku": "KH-WP-01",
+    "sales_channel": "web",
+    "payment_mode": "cod",
+    "discount_pct": 10.0,
+    "qty": 1,
+    "order_value_inr": 10799.1,
+    "promised_delivery_days": 3,
+    "delivery_pincode": "110973",
+    "is_gift": "N",
+    "customer_prior_orders": 7,
+    "customer_prior_returns": 5
+  }'
+
+Response (HTTP 200 OK):
+{
+  "order_id": "KO2611540",
+  "score": 0.946958,
+  "display_score": "60% or more",
+  "risk_band": "Very high",
+  "recommended_action": "Call customer to confirm before dispatch",
+  "reasons_up": [
+    "Customers with 3 or more prior returns: 61.3% were returned in past data (124 orders), against 9.1% for customers with zero prior returns (9,119 orders).",
+    "Cash-on-delivery orders: 18.8% were returned in past data (3,152 orders), against 8.3% for prepaid orders (7,352 orders)."
+  ],
+  "reasons_down": [
+    "Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).",
+    "Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders)."
+  ],
+  "model_version": "1.0.0",
+  "limits": "About 3 in 4 called orders are not returned in past data; predictions are probabilistic estimates based on dispatch characteristics."
+}
+
+================================================================================
+2. BAD-INPUT CALL RETURNING 422 UNPROCESSABLE ENTITY
+--------------------------------------------------------------------------------
+Command:
+curl -i -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "order_id": "TEST_BAD",
+    "discount_pct": "not-a-number"
+  }'
+
+Response (HTTP 422 Unprocessable Content / Entity):
+HTTP/1.1 422 Unprocessable Content
+date: Thu, 08 Oct 2026 04:41:17 GMT
+server: uvicorn
+content-length: 1789
+content-type: application/json
+
+{
+  "detail": [
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "order_placed_at"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "customer_id"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "sku"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "sales_channel"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "payment_mode"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "float_parsing",
+      "loc": [
+        "body",
+        "discount_pct"
+      ],
+      "msg": "Input should be a valid number, unable to parse string as a number",
+      "input": "not-a-number"
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "qty"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "order_value_inr"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "promised_delivery_days"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "delivery_pincode"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "is_gift"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "customer_prior_orders"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "customer_prior_returns"
+      ],
+      "msg": "Field required",
+      "input": {
+        "order_id": "TEST_BAD",
+        "discount_pct": "not-a-number"
+      }
+    }
+  ]
+}

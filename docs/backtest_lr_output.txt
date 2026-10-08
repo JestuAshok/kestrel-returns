@@ -1,0 +1,97 @@
+
+================================================================================
+ PART A: LOGISTIC REGRESSION ROLLING-ORIGIN BACKTEST & ABLATION
+================================================================================
+
+Timestamp: 2026-10-07 14:09:57
+
+================================================================================
+ 1. MONTHLY ROLLING-ORIGIN BACKTEST (2025-11 to 2026-06)
+================================================================================
+
+                          Month Train N  Test N  Returns Return Rate (%)  ROC-AUC  PR-AUC  Brier Score
+                        2025-11    4870     698       74          10.60%   0.7394  0.2934       0.0866
+                        2025-12    5568     684       70          10.23%   0.7997  0.4208       0.0753
+                        2026-01    6252     719       81          11.27%   0.7520  0.3617       0.0879
+                        2026-02    6971     664       85          12.80%   0.8047  0.5135       0.0867
+                        2026-03    7635     743       81          10.90%   0.7563  0.2926       0.0890
+                        2026-04    8378     705       85          12.06%   0.7957  0.4443       0.0859
+                        2026-05    9083     722       83          11.50%   0.7828  0.4023       0.0863
+                        2026-06    9805     699       77          11.02%   0.7878  0.3976       0.0824
+ALL POOLED (2025-11 to 2026-06)       -    5634      636          11.29%   0.7760  0.3844       0.0851
+
+================================================================================
+ 2. SAVE OUT-OF-SAMPLE PREDICTIONS
+================================================================================
+
+Saved 5634 pooled out-of-sample predictions to:
+  C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data\processed\oos_preds_lr.csv
+
+First 5 records:
+ order_id  order_placed_at    score  returned shield_member payment_mode  order_value_inr_fixed            family
+KO2604870 2025-11-01 01:27 0.007644         0             N  prepaid_upi                5578.14 Induction Cooktop
+KO2604871 2025-11-01 02:04 0.035410         0             N prepaid_card               16543.06      Robot Vacuum
+KO2604872 2025-11-01 06:50 0.052670         0             N  prepaid_upi               15839.10      Robot Vacuum
+KO2604873 2025-11-01 09:05 0.020188         0             N prepaid_card                4648.14       Room Heater
+KO2604874 2025-11-01 11:20 0.270595         0             N          cod                2664.67       Room Heater
+
+================================================================================
+ 3. LOGISTIC REGRESSION FEATURE ABLATION STUDY
+================================================================================
+
+Protocol: Fit set = orders before 2026-04-01 (N=8,378), Validation set = 2026-04-01 to 2026-06-30 (N=2,126).
+
+                                                     Ablation Setting  Features Left  ROC-AUC  Delta ROC-AUC  PR-AUC  Delta PR-AUC
+                                              All Features (Baseline)             24   0.7882         0.0000  0.4135        0.0000
+                                                without shield_member             23   0.7603        -0.0279  0.3747       -0.0387
+without customer history (prior_orders, prior_returns, smoothed_rate)             21   0.7404        -0.0478  0.2934       -0.1201
+                     without customer_age_days and signup_after_order             22   0.7883         0.0001  0.4131       -0.0004
+                                       without promised_delivery_days             23   0.7783        -0.0099  0.3897       -0.0237
+                                                 without payment_mode             23   0.7531        -0.0350  0.3550       -0.0585
+
+================================================================================
+ 4. STANDARDIZED COEFFICIENTS (FIT SET)
+================================================================================
+
+
+--- Top 15 Positive Coefficients (INCREASES Risk of Return) ---
+                  Feature  Coefficient  Odds Ratio (exp(b))
+         payment_mode_cod       0.6406               1.8977
+   customer_prior_returns       0.5137               1.6714
+           list_price_inr       0.4694               1.5990
+   promised_delivery_days       0.3833               1.4671
+          city_Aurangabad       0.2399               1.2712
+             discount_pct       0.2168               1.2420
+              city_Nagpur       0.1799               1.1972
+                city_Kota       0.1716               1.1872
+sales_channel_marketplace       0.1716               1.1871
+      family_Robot Vacuum       0.1443               1.1552
+          shield_member_Y       0.1439               1.1548
+            city_Warangal       0.1358               1.1454
+              city_Nashik       0.1063               1.1122
+            city_Hubballi       0.0902               1.0944
+              city_Bhopal       0.0825               1.0860
+
+--- Top 15 Negative Coefficients (DECREASES Risk of Return) ---
+                     Feature  Coefficient  Odds Ratio (exp(b))
+             shield_member_N      -0.7735               0.4614
+                   is_gift_N      -0.6640               0.5148
+    payment_mode_prepaid_upi      -0.5049               0.6036
+    family_Induction Cooktop      -0.4989               0.6072
+sales_channel_partner_outlet      -0.4565               0.6335
+            payment_mode_emi      -0.4379               0.6454
+                   city_Pune      -0.3881               0.6783
+   payment_mode_prepaid_card      -0.3274               0.7208
+                    state_TN      -0.3133               0.7310
+              price_per_unit      -0.2445               0.7831
+             warranty_months      -0.2442               0.7833
+           sales_channel_app      -0.2299               0.7946
+                city_Chennai      -0.2235               0.7997
+              city_Hyderabad      -0.2145               0.8069
+                 city_Jaipur      -0.2122               0.8088
+
+================================================================================
+ PART A COMPLETE
+================================================================================
+
+Log saved to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\backtest_lr_output.txt

@@ -1,0 +1,214 @@
+
+================================================================================
+ KESTREL HOME APPLIANCES: MODEL TRAINING & VALIDATION AUDIT
+================================================================================
+
+Timestamp: 2026-10-07 12:08:07
+Log path: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\train_output.txt
+
+================================================================================
+ DIAGNOSTICS: D1, D2, D3
+================================================================================
+
+
+--- D1. Cross-tab of (signup_date > order_placed_at) by shield_member ---
+shield_member                            N     Y  Total
+Order placed on/after signup (False)  6633  1872   8505
+Signup date AFTER order date (True)   1544   455   1999
+Total                                 8177  2327  10504
+
+Independent recount of signup_date > order_placed_at rows: 1999
+Explanation: 1999 is verified correct. It is not an exclusive Shield phenomenon: 1,544 non-Shield (18.88%)
+and 455 Shield (19.55%) orders exhibit this due to guest checkouts with retroactive registration.
+
+--- D2. Non-Monotonic customer_prior_orders in Multi-Order Customers ---
+Total multi-order customers: 2970
+Customers with LATER order having LOWER prior_orders: 1471 (49.53%)
+
+5 Example Customers showing prior_orders / prior_returns inversion over time:
+customer_id  order_id  order_placed_at  customer_prior_orders  customer_prior_returns  returned  sales_channel
+   KC100005 KO2603809 2025-09-16 01:04                      3                       1         0            web
+   KC100005 KO2607027 2026-02-03 17:27                      1                       0         0            app
+   KC100008 KO2600540 2025-04-25 07:34                      1                       1         0            web
+   KC100008 KO2606113 2025-12-25 21:46                      0                       0         0            web
+   KC100008 KO2609101 2026-05-01 23:44                      0                       0         0            web
+   KC100011 KO2603192 2025-08-20 03:47                      2                       0         0    marketplace
+   KC100011 KO2604580 2025-10-19 02:34                      1                       0         0            web
+   KC100012 KO2600187 2025-04-09 15:34                      2                       0         1    marketplace
+   KC100012 KO2604686 2025-10-24 06:08                      2                       0         0    marketplace
+   KC100012 KO2606290 2026-01-02 18:58                      0                       0         0            app
+   KC100021 KO2603730 2025-09-12 20:03                      2                       0         0            app
+   KC100021 KO2604881 2025-11-01 20:51                      1                       0         0 partner_outlet
+   KC100021 KO2606768 2026-01-22 10:40                      2                       0         0    marketplace
+
+--- D3. Correlation between `returned` and Prior History Features ---
+                      Feature  Fit Set Pearson  Val Set Pearson  Fit Set Spearman  Val Set Spearman
+        customer_prior_orders           0.1379           0.1542            0.1031            0.1127
+       customer_prior_returns           0.2421           0.2489            0.2024            0.1886
+smoothed_customer_return_rate           0.2157           0.2151            0.1189            0.0971
+
+================================================================================
+ DATASET PARTITIONING (STRICT TIME-SERIES SPLIT)
+================================================================================
+
+                                Partition  Rows  Returns Return Rate
+                   Fit Set (< 2026-04-01)  8378      955      11.40%
+Validation Set (2026-04-01 to 2026-06-30)  2126      245      11.52%
+
+================================================================================
+ TRAINING MODELS
+================================================================================
+
+1. Dummy Baseline fitted. Constant probability: 0.113989
+2. Logistic Regression fitted.
+3. HistGradientBoosting time-ordered inner early stopping selected best_iter=65 (Inner val log-loss: 0.3100)
+
+================================================================================
+ VALIDATION SET PERFORMANCE BENCHMARK
+================================================================================
+
+               Model  ROC-AUC  PR-AUC  Brier Score  Log-Loss Accuracy (th=0.5) Accuracy (Always 0)
+      Dummy Baseline   0.5000  0.1152       0.1020    0.3573            88.48%              88.48%
+ Logistic Regression   0.7882  0.4135       0.0848    0.2926            89.46%              88.48%
+HistGradientBoosting   0.7612  0.3739       0.0879    0.3050            88.85%              88.48%
+
+================================================================================
+ TOP PERCENTILE TARGETING (TOP 5%, 10%, 20%, 30%)
+================================================================================
+
+
+--- Logistic Regression - Top Decile / Percentile Performance ---
+Top % Flagged  Orders Flagged (k)  Returns Caught Precision Recall  Lift
+       Top 5%                 107              59    55.14% 24.08% 4.78x
+      Top 10%                 213              89    41.78% 36.33% 3.63x
+      Top 20%                 426             132    30.99% 53.88% 2.69x
+      Top 30%                 638             162    25.39% 66.12% 2.20x
+
+--- HistGradientBoosting - Top Decile / Percentile Performance ---
+Top % Flagged  Orders Flagged (k)  Returns Caught Precision Recall  Lift
+       Top 5%                 107              59    55.14% 24.08% 4.78x
+      Top 10%                 213              89    41.78% 36.33% 3.63x
+      Top 20%                 426             127    29.81% 51.84% 2.59x
+      Top 30%                 638             154    24.14% 62.86% 2.09x
+
+================================================================================
+ BOOTSTRAP CONFIDENCE INTERVALS (95% CI, 1,000 RESAMPLES)
+================================================================================
+
+               Model      Metric   Mean  95% CI Lower  95% CI Upper
+ Logistic Regression     ROC-AUC 0.7872        0.7551        0.8155
+ Logistic Regression      PR-AUC 0.4132        0.3507        0.4749
+ Logistic Regression Brier Score 0.0851        0.0765        0.0941
+ Logistic Regression    Log-Loss 0.2934        0.2683        0.3184
+HistGradientBoosting     ROC-AUC 0.7611        0.7276        0.7919
+HistGradientBoosting      PR-AUC 0.3761        0.3152        0.4402
+HistGradientBoosting Brier Score 0.0881        0.0798        0.0968
+HistGradientBoosting    Log-Loss 0.3055        0.2820        0.3305
+
+================================================================================
+ ROLLING-ORIGIN TIME-SERIES BACKTEST
+================================================================================
+
+             Training Window                         Test Period  Train N  Test N Test Return Rate  HGB ROC-AUC  HGB PR-AUC  HGB Brier
+          2025-04 to 2025-10                             2025-11     4870     698           10.60%       0.7446      0.2812     0.0878
+          2025-04 to 2025-11                             2025-12     5568     684           10.23%       0.7848      0.3612     0.0787
+          2025-04 to 2025-12                             2026-01     6252     719           11.27%       0.7371      0.2971     0.0917
+          2025-04 to 2026-01                             2026-02     6971     664           12.80%       0.7774      0.4787     0.0907
+          2025-04 to 2026-02                             2026-03     7635     743           10.90%       0.7442      0.2751     0.0902
+2025-04 to 2026-03 (Fit Set) 2026-04 to 2026-06 (Validation Set)     8378    2126           11.52%       0.7615      0.3859     0.0871
+
+================================================================================
+ FEATURE ABLATION STUDY (ON VALIDATION SET)
+================================================================================
+
+             Ablation Experiment  Features Remaining  ROC-AUC  Delta ROC-AUC  PR-AUC  Delta PR-AUC
+         All Features (Baseline)                  24   0.7612         0.0000  0.3739        0.0000
+        Without Customer History                  21   0.7084        -0.0528  0.2717       -0.1022
+         Without Pricing / Value                  20   0.7565        -0.0046  0.3695       -0.0044
+          Without Temporal / Age                  18   0.7584        -0.0028  0.3685       -0.0053
+     Without Geography / Address                  19   0.7406        -0.0206  0.3506       -0.0233
+Without Product Family & Channel                  19   0.6978        -0.0634  0.2854       -0.0884
+
+================================================================================
+ PERMUTATION FEATURE IMPORTANCE (ON VALIDATION SET)
+================================================================================
+
+Top 15 Most Influential Features:
+                      Feature  Mean Importance (ROC-AUC drop)     Std
+                 payment_mode                         0.05461 0.00617
+                shield_member                         0.02976 0.00482
+       promised_delivery_days                         0.02579 0.00849
+       customer_prior_returns                         0.01513 0.00418
+                       family                         0.01485 0.00711
+                 discount_pct                         0.00757 0.00368
+smoothed_customer_return_rate                         0.00711 0.00380
+                sales_channel                         0.00232 0.00259
+                         city                         0.00223 0.00477
+                        state                         0.00204 0.00101
+        customer_prior_orders                         0.00202 0.00094
+                      is_gift                         0.00180 0.00145
+                   order_hour                         0.00061 0.00033
+            days_since_launch                         0.00050 0.00078
+              warranty_months                         0.00021 0.00025
+
+================================================================================
+ CALIBRATION TABLE (HISTGRADIENTBOOSTING ON VALIDATION SET)
+================================================================================
+
+     Decile Band  Orders Count  Observed Returns Observed Rate (%) Mean Pred Prob (%) Calibration Gap (% pts)
+(0.0169, 0.0316]           213                 5             2.35%              2.65%                  +0.30%
+(0.0316, 0.0442]           213                 7             3.29%              3.72%                  +0.44%
+(0.0442, 0.0568]           212                 8             3.77%              5.10%                  +1.32%
+(0.0568, 0.0699]           213                12             5.63%              6.35%                  +0.72%
+ (0.0699, 0.082]           212                17             8.02%              7.61%                  -0.41%
+ (0.082, 0.0981]           213                17             7.98%              8.90%                  +0.92%
+ (0.0981, 0.124]           212                25            11.79%             10.96%                  -0.83%
+   (0.124, 0.16]           213                27            12.68%             14.20%                  +1.53%
+   (0.16, 0.241]           212                38            17.92%             19.08%                  +1.15%
+  (0.241, 0.805]           213                89            41.78%             36.16%                  -5.63%
+
+================================================================================
+ OPERATIONAL SLICE REPORT (VALIDATION SET)
+================================================================================
+
+
+--- Performance Slice: payment_mode ---
+payment_mode  Orders  Actual Returns Actual Rate (%) Mean Score (%)  ROC-AUC  PR-AUC  Brier
+         cod     655             130          19.85%         17.33%   0.7322  0.4748 0.1371
+         emi     268              30          11.19%          9.79%   0.7266  0.3149 0.0895
+prepaid_card     442              36           8.14%          8.72%   0.7256  0.2960 0.0678
+ prepaid_upi     761              49           6.44%          8.63%   0.7285  0.2160 0.0567
+
+--- Performance Slice: shield_member ---
+shield_member  Orders  Actual Returns Actual Rate (%) Mean Score (%)  ROC-AUC  PR-AUC  Brier
+            N    1648             147           8.92%         10.15%   0.7334  0.3033 0.0727
+            Y     478              98          20.50%         16.06%   0.7580  0.4919 0.1404
+
+--- Performance Slice: family ---
+           family  Orders  Actual Returns Actual Rate (%) Mean Score (%)  ROC-AUC  PR-AUC  Brier
+        Air Fryer     300              32          10.67%         12.90%   0.8231  0.4845 0.0748
+      Ceiling Fan     320              23           7.19%          8.20%   0.7485  0.3317 0.0595
+Induction Cooktop     284              30          10.56%          8.08%   0.7768  0.4853 0.0793
+    Mixer Grinder     301              23           7.64%          8.18%   0.7373  0.2820 0.0634
+     Robot Vacuum     336              61          18.15%         17.33%   0.7013  0.4068 0.1323
+      Room Heater     316              42          13.29%         11.57%   0.7423  0.3789 0.1028
+   Water Purifier     269              34          12.64%         13.63%   0.7383  0.3294 0.1000
+
+--- Performance Slice: sales_channel ---
+ sales_channel  Orders  Actual Returns Actual Rate (%) Mean Score (%)  ROC-AUC  PR-AUC  Brier
+           app     706              85          12.04%         11.32%   0.7489  0.3545 0.0934
+   marketplace     569              73          12.83%         12.37%   0.7585  0.3620 0.0976
+partner_outlet     269              26           9.67%         10.38%   0.7569  0.3670 0.0740
+           web     582              61          10.48%         11.29%   0.7736  0.4506 0.0782
+
+================================================================================
+ SAVING VALIDATION PREDICTIONS
+================================================================================
+
+Validation predictions saved to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data\processed\val_preds.csv (Rows: 2126)
+
+================================================================================
+ MODEL TRAINING & VALIDATION PIPELINE COMPLETE
+================================================================================
+
+Full execution log saved to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\train_output.txt

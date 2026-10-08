@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kestrel Returns Decision Engine</title>
+  <style>
+    :root {
+      --bg-primary: #0a0f1d;
+      --bg-secondary: #121a2f;
+      --bg-card: rgba(22, 33, 58, 0.75);
+      --border-color: rgba(66, 153, 225, 0.2);
+      --border-hover: rgba(66, 153, 225, 0.45);
+      --text-main: #f0f4f8;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-orange: #f97316;
+      --accent-red: #ef4444;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #172554 0%, var(--bg-primary) 70%);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(10, 15, 29, 0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+      font-size: 1.15rem;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-dot {
+      width: 0.45rem;
+      height: 0.45rem;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    input, select {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      padding: 0.65rem 0.85rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #fff;
+      box-shadow: 0 4px 14px var(--accent-glow);
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--border-hover);
+    }
+
+    /* Result Panel Styles */
+    .result-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .score-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .score-value {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+    }
+
+    .risk-badge {
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .risk-low {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .risk-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .risk-high {
+      background: rgba(249, 115, 22, 0.2);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    .risk-very-high {
+      background: rgba(239, 68, 68, 0.25);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+    }
+
+    .action-box {
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      text-align: center;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .action-call {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .action-dispatch {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .action-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .action-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .action-call .action-title {
+      color: #fca5a5;
+    }
+
+    .action-dispatch .action-title {
+      color: #86efac;
+    }
+
+    .reasons-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .reason-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .reason-item {
+      display: flex;
+      gap: 0.75rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 0.5rem;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      border-left: 3px solid transparent;
+    }
+
+    .reason-up {
+      border-left-color: #f87171;
+    }
+
+    .reason-down {
+      border-left-color: #34d399;
+    }
+
+    .reason-icon {
+      font-weight: bold;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .reason-up .reason-icon {
+      color: #f87171;
+    }
+
+    .reason-down .reason-icon {
+      color: #34d399;
+    }
+
+    .limits-box {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 0.85rem;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .error-panel {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    .empty-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+      color: var(--text-dim);
+      text-align: center;
+      gap: 0.5rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">K</div>
+      <div>
+        <div class="brand-title">Kestrel Decision Engine</div>
+        <div class="brand-subtitle">Returns Risk Assessment & Operational Explainability</div>
+      </div>
+    </div>
+    <div class="badge-status">
+      <span class="status-dot"></span>
+      <span>Policy Active (12% Call)</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Order Input Form -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Order Dispatch Snapshot</h2>
+        <button id="btnSample" class="btn-secondary" type="button">
+          Fill with sample order
+        </button>
+      </div>
+
+      <div id="errorBox" class="error-panel"></div>
+
+      <form id="orderForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="order_id">Order ID (optional)</label>
+            <input type="text" id="order_id" name="order_id" placeholder="KO2610504">
+          </div>
+          <div class="form-group">
+            <label for="order_placed_at">Order Placed At</label>
+            <input type="text" id="order_placed_at" name="order_placed_at" value="2026-07-01 10:30" required>
+          </div>
+
+          <div class="form-group">
+            <label for="customer_id">Customer ID</label>
+            <input type="text" id="customer_id" name="customer_id" value="KC105196" required>
+          </div>
+          <div class="form-group">
+            <label for="sku">Product SKU</label>
+            <input type="text" id="sku" name="sku" value="KH-IC-03" required>
+          </div>
+
+          <div class="form-group">
+            <label for="sales_channel">Sales Channel</label>
+            <select id="sales_channel" name="sales_channel" required>
+              <option value="app">App</option>
+              <option value="web" selected>Web</option>
+              <option value="marketplace">Marketplace</option>
+              <option value="partner_outlet">Partner Outlet</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="payment_mode">Payment Mode</label>
+            <select id="payment_mode" name="payment_mode" required>
+              <option value="cod">Cash on Delivery (COD)</option>
+              <option value="prepaid_upi" selected>Prepaid UPI</option>
+              <option value="prepaid_card">Prepaid Card</option>
+              <option value="emi">EMI Installment</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="order_value_inr">Order Value (INR)</label>
+            <input type="number" id="order_value_inr" name="order_value_inr" step="0.01" value="3521.76" required>
+          </div>
+          <div class="form-group">
+            <label for="discount_pct">Discount %</label>
+            <input type="number" id="discount_pct" name="discount_pct" step="0.1" value="13.0" required>
+          </div>
+
+          <div class="form-group">
+            <label for="qty">Quantity</label>
+            <input type="number" id="qty" name="qty" min="1" value="1" required>
+          </div>
+          <div class="form-group">
+            <label for="promised_delivery_days">Delivery Days</label>
+            <input type="number" id="promised_delivery_days" name="promised_delivery_days" min="1" max="14" value="7" required>
+          </div>
+
+          <div class="form-group">
+            <label for="delivery_pincode">Delivery Pincode</label>
+            <input type="text" id="delivery_pincode" name="delivery_pincode" value="440378" required>
+          </div>
+          <div class="form-group">
+            <label for="is_gift">Is Gift Order?</label>
+            <select id="is_gift" name="is_gift" required>
+              <option value="N" selected>No (Personal)</option>
+              <option value="Y">Yes (Gift)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="customer_prior_orders">Customer Prior Orders</label>
+            <input type="number" id="customer_prior_orders" name="customer_prior_orders" min="0" value="2" required>
+          </div>
+          <div class="form-group">
+            <label for="customer_prior_returns">Customer Prior Returns</label>
+            <input type="number" id="customer_prior_returns" name="customer_prior_returns" min="0" value="1" required>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="btnSubmit" class="btn-primary" type="submit">
+            Check order
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Prediction & Explanation Result Panel -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Dispatch Assessment</h2>
+        <span id="modelVersion" style="font-size: 0.75rem; color: var(--text-dim);">Model v1.0.0</span>
+      </div>
+
+      <div id="resultContent" class="result-container" style="display: none;">
+        <!-- Score & Band Banner -->
+        <div class="score-banner">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">
+              Predicted Return Risk
+            </div>
+            <div id="displayScore" class="score-value">--</div>
+          </div>
+          <div id="riskBand" class="risk-badge risk-low">Low</div>
+        </div>
+
+        <!-- Recommended Action in Large Text -->
+        <div id="actionBox" class="action-box action-dispatch">
+          <div class="action-label">Recommended Action</div>
+          <div id="recommendedAction" class="action-title">Dispatch as normal</div>
+        </div>
+
+        <!-- Reasons Breakdown -->
+        <div class="reasons-section">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: #f87171; font-weight: 700; margin-bottom: 0.4rem;">
+              Factors Increasing Risk
+            </div>
+            <div id="reasonsUp" class="reason-list"></div>
+          </div>
+
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: #34d399; font-weight: 700; margin-bottom: 0.4rem;">
+              Factors Decreasing Risk
+            </div>
+            <div id="reasonsDown" class="reason-list"></div>
+          </div>
+        </div>
+
+        <!-- Limits Disclaimer -->
+        <div id="limitsLine" class="limits-box">
+          About 3 in 4 called orders are not returned in past data; predictions are probabilistic estimates based on dispatch characteristics.
+        </div>
+      </div>
+
+      <!-- Placeholder before first check -->
+      <div id="emptyState" class="empty-placeholder">
+        <div style="font-size: 2rem;">📦</div>
+        <div style="font-weight: 600;">No order evaluated yet</div>
+        <div style="font-size: 0.8rem;">Click "Check order" or "Fill with sample order" to run returns risk scoring.</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Kestrel Home Appliances &bull; Operations & Logistics Intelligence &bull; Production Model Pipeline
+  </footer>
+
+  <script>
+    let sampleOrders = [];
+    let sampleIndex = 0;
+
+    // Load samples on startup
+    fetch('/sample')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          sampleOrders = data;
+        }
+      })
+      .catch(err => console.log('Sample loading info:', err));
+
+    // Fill sample order button
+    document.getElementById('btnSample').addEventListener('click', () => {
+      if (!sampleOrders || sampleOrders.length === 0) return;
+      const order = sampleOrders[sampleIndex % sampleOrders.length];
+      sampleIndex++;
+
+      for (const [key, val] of Object.entries(order)) {
+        const input = document.getElementById(key);
+        if (input) {
+          input.value = val;
+        }
+      }
+      hideError();
+    });
+
+    // Form submission
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const form = e.target;
+      const payload = {
+        order_id: form.order_id.value.trim() || null,
+        order_placed_at: form.order_placed_at.value.trim(),
+        customer_id: form.customer_id.value.trim(),
+        sku: form.sku.value.trim(),
+        sales_channel: form.sales_channel.value,
+        payment_mode: form.payment_mode.value,
+        order_value_inr: parseFloat(form.order_value_inr.value),
+        discount_pct: parseFloat(form.discount_pct.value),
+        qty: parseInt(form.qty.value, 10),
+        promised_delivery_days: parseInt(form.promised_delivery_days.value, 10),
+        delivery_pincode: form.delivery_pincode.value.trim(),
+        is_gift: form.is_gift.value,
+        customer_prior_orders: parseInt(form.customer_prior_orders.value, 10),
+        customer_prior_returns: parseInt(form.customer_prior_returns.value, 10),
+      };
+
+      try {
+        const res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showError(data.detail || 'Prediction failed. Please check input parameters.');
+          return;
+        }
+
+        renderResult(data);
+      } catch (err) {
+        showError('Network or server error while connecting to prediction engine.');
+      }
+    });
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      box.textContent = msg;
+      box.style.display = 'block';
+    }
+
+    function hideError() {
+      const box = document.getElementById('errorBox');
+      box.style.display = 'none';
+      box.textContent = '';
+    }
+
+    function renderResult(data) {
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('resultContent').style.display = 'flex';
+
+      // Score and Band
+      document.getElementById('displayScore').textContent = data.display_score;
+      const bandEl = document.getElementById('riskBand');
+      bandEl.textContent = data.risk_band;
+      bandEl.className = 'risk-badge';
+
+      if (data.risk_band === 'Low') {
+        bandEl.classList.add('risk-low');
+      } else if (data.risk_band === 'Medium') {
+        bandEl.classList.add('risk-medium');
+      } else if (data.risk_band === 'High') {
+        bandEl.classList.add('risk-high');
+      } else {
+        bandEl.classList.add('risk-very-high');
+      }
+
+      // Action Box
+      const actionBox = document.getElementById('actionBox');
+      const actionTitle = document.getElementById('recommendedAction');
+      actionTitle.textContent = data.recommended_action;
+
+      if (data.score >= 0.12) {
+        actionBox.className = 'action-box action-call';
+      } else {
+        actionBox.className = 'action-box action-dispatch';
+      }
+
+      // Reasons UP
+      const upContainer = document.getElementById('reasonsUp');
+      upContainer.innerHTML = '';
+      if (data.reasons_up && data.reasons_up.length > 0) {
+        data.reasons_up.forEach(r => {
+          const item = document.createElement('div');
+          item.className = 'reason-item reason-up';
+          item.innerHTML = `<span class="reason-icon">+</span><span>${r}</span>`;
+          upContainer.appendChild(item);
+        });
+      } else {
+        upContainer.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-dim); padding: 0.25rem 0;">(None qualified)</div>';
+      }
+
+      // Reasons DOWN
+      const downContainer = document.getElementById('reasonsDown');
+      downContainer.innerHTML = '';
+      if (data.reasons_down && data.reasons_down.length > 0) {
+        data.reasons_down.forEach(r => {
+          const item = document.createElement('div');
+          item.className = 'reason-item reason-down';
+          item.innerHTML = `<span class="reason-icon">-</span><span>${r}</span>`;
+          downContainer.appendChild(item);
+        });
+      } else {
+        downContainer.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-dim); padding: 0.25rem 0;">(None qualified)</div>';
+      }
+
+      // Limits line
+      document.getElementById('limitsLine').textContent = data.limits;
+    }
+  </script>
+</body>
+</html>

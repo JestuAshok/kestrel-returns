@@ -1,0 +1,410 @@
+
+================================================================================
+ KESTREL HOME APPLIANCES: RETURNS-RISK DATA AUDIT REPORT
+================================================================================
+
+Audit executed at: 2026-10-07 11:06:13
+Data directory: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data
+Report output: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\audit_output.txt
+
+================================================================================
+ 1. SHAPE & TEMPORAL RANGE
+================================================================================
+
+                   Dataset  Rows  Columns Min order_placed_at Max order_placed_at
+         Train (train.csv) 11155       19    2025-04-01 00:22    2026-06-30 23:08
+Test (test_unlabelled.csv)  2096       18    2026-07-01 00:51    2026-09-30 23:46
+
+--- Reference Tables ---
+                  Dataset  Rows  Columns
+Customers (customers.csv)  9000        5
+  Products (products.csv)    21        6
+
+================================================================================
+ 2. RETURN RATE ANALYSIS (TRAIN)
+================================================================================
+
+
+--- 2.1 Overall Return Rate ---
+ Total Orders  Returned Orders  Non-Returned Orders Overall Return Rate (%)
+        11155             1267                 9888                  11.36%
+
+--- 2.2 Return Rate by Month ---
+  month  Total_Orders  Returned_Orders Return_Rate
+2025-04           698              102      14.61%
+2025-05           708               83      11.72%
+2025-06           721               70       9.71%
+2025-07           785               93      11.85%
+2025-08           759               95      12.52%
+2025-09           747               61       8.17%
+2025-10           748               86      11.50%
+2025-11           737               80      10.85%
+2025-12           723               73      10.10%
+2026-01           769               85      11.05%
+2026-02           710               93      13.10%
+2026-03           789               88      11.15%
+2026-04           760               91      11.97%
+2026-05           759               85      11.20%
+2026-06           742               82      11.05%
+
+--- 2.3 Return Rate by Sales Channel ---
+ Sales Channel  Total_Orders  Returned_Orders Return_Rate
+   marketplace          2906              393      13.52%
+           web          2797              310      11.08%
+           app          3613              387      10.71%
+partner_outlet          1839              177       9.62%
+
+--- 2.4 Return Rate by Payment Mode ---
+Payment Mode  Total_Orders  Returned_Orders Return_Rate
+         cod          3355              632      18.84%
+         emi          1360              122       8.97%
+prepaid_card          2290              198       8.65%
+ prepaid_upi          4150              315       7.59%
+
+--- 2.5 Return Rate by Shield Member Status (joined from customers.csv) ---
+Shield Member Status  Total_Orders  Returned_Orders Return_Rate
+                   Y          2467              462      18.73%
+                   N          8688              805       9.27%
+
+--- 2.6 Return Rate by Product Family (joined from products.csv) ---
+   Product Family  Total_Orders  Returned_Orders Return_Rate
+     Robot Vacuum          1655              319      19.27%
+   Water Purifier          1530              227      14.84%
+        Air Fryer          1613              193      11.97%
+      Room Heater          1620              187      11.54%
+Induction Cooktop          1560              129       8.27%
+    Mixer Grinder          1540              105       6.82%
+      Ceiling Fan          1637              107       6.54%
+
+================================================================================
+ 3. BASELINE: 'NEVER RETURNED' MODEL ON TRAIN
+================================================================================
+
+ Total Observations  Class 0 (Not Returned)  Class 1 (Returned)  Naive Model Prediction Baseline Accuracy Majority Class Ratio
+              11155                    9888                1267                       0          88.6419%               0.8864
+
+Interpretation: A zero-intelligence dummy model predicting 0 for every order achieves
+88.64% accuracy. Any predictive model must beat this benchmark meaningfully,
+especially on cost-weighted metrics, precision, recall, and ROC-AUC / Log-Loss.
+
+================================================================================
+ 4. DUPLICATES ANALYSIS
+================================================================================
+
+
+--- 4.1 Duplicate order_id Counts in Train ---
+Total Rows with Duplicated order_id: 1302
+Distinct Duplicated order_ids: 651
+Total Rows with Duplicated order_id in Test: 0
+
+--- 4.2 Source Distribution of Duplicated Rows ---
+      Source  Duplicate Row Count
+partner_feed                  651
+         crm                  651
+
+--- 4.3 Summary of Column Discrepancies Across Duplicated Copies ---
+ Total Duplicated IDs  Copies differ in order_value_inr  Copies differ in returned target  Copies with any differing columns  Identical copies (except source)
+                  651                                 0                                 0                                  0                               651
+
+--- 4.4 Detailed Examination of Duplicated Rows (Sample) ---
+ order_id       source  order_value_inr  returned payment_mode  discount_pct  qty
+KO2600013 partner_feed          8685.27         0  prepaid_upi             1    1
+KO2600013          crm          8685.27         0  prepaid_upi             1    1
+KO2600033          crm          2975.07         0 prepaid_card             7    1
+KO2600033 partner_feed          2975.07         0 prepaid_card             7    1
+KO2600045          crm          7632.51         0  prepaid_upi            13    1
+KO2600045 partner_feed          7632.51         0  prepaid_upi            13    1
+KO2600050          crm          8246.62         0          emi             6    1
+KO2600050 partner_feed          8246.62         0          emi             6    1
+KO2600060          crm          8246.62         0          cod             6    1
+KO2600060 partner_feed          8246.62         0          cod             6    1
+
+================================================================================
+ 5. MISSING VALUES & PINCODE CHECK
+================================================================================
+
+
+--- 5.1 Missing Values Per Column in Train & Test ---
+                 Column  Train Missing Count  Train Missing (%) Test Missing Count Test Missing (%)
+               order_id                    0               0.00                0.0              0.0
+        order_placed_at                    0               0.00                0.0              0.0
+            customer_id                    0               0.00                0.0              0.0
+                    sku                    0               0.00                0.0              0.0
+          sales_channel                    0               0.00                0.0              0.0
+           payment_mode                    0               0.00                0.0              0.0
+           discount_pct                    0               0.00                0.0              0.0
+                    qty                    0               0.00                0.0              0.0
+        order_value_inr                    0               0.00                0.0              0.0
+ promised_delivery_days                    0               0.00                0.0              0.0
+       delivery_pincode                    0               0.00                0.0              0.0
+                is_gift                    0               0.00                0.0              0.0
+  customer_prior_orders                    0               0.00                0.0              0.0
+ customer_prior_returns                    0               0.00                0.0              0.0
+          delivery_note                 2752              24.67              538.0            25.67
+last_service_event_type                    0               0.00                0.0              0.0
+    pickup_scheduled_at                 9855              88.35             2096.0            100.0
+                 source                    0               0.00                0.0              0.0
+               returned                    0               0.00                  -                -
+
+--- 5.2 Analysis of Dummy Pincode '000000' ---
+            Pincode Category  Train Count Train Share (%)  Train Returns Return Rate (%)  Test Count Test Share (%)
+delivery_pincode == '000000'          889           7.97%            112          12.60%         176          8.40%
+      Valid / Other Pincodes        10266          92.03%           1155          11.25%        1920         91.60%
+
+================================================================================
+ 6. LEAKAGE CHECK: last_service_event_type & pickup_scheduled_at
+================================================================================
+
+Note: According to Ops Policy §7, logistics books a reverse pickup and writes
+'pickup_scheduled_at', and the service system records a 'REVERSE_PICKUP' event
+AFTER a return is approved by customer service. This indicates severe target leakage!
+
+
+--- 6.1 Population Rates in Train vs Test ---
+                 Column  Train Populated Count Train Populated (%)  Test Populated Count Test Populated (%)
+last_service_event_type                  11155             100.00%                  2096            100.00%
+    pickup_scheduled_at                   1300              11.65%                     0              0.00%
+
+--- 6.2 Null vs Non-Null Return Rates in Train & Counts in Test ---
+                Feature            Condition  Train Count  Train Returns Train Return Rate (%)  Test Count
+last_service_event_type Non-Null (Populated)        11155           1267                11.36%        2096
+last_service_event_type       Null (Missing)            0              0                 0.00%           0
+    pickup_scheduled_at Non-Null (Populated)         1300           1191                91.62%           0
+    pickup_scheduled_at       Null (Missing)         9855             76                 0.77%        2096
+
+--- 6.3 Breakdown by last_service_event_type Value ---
+last_service_event_type  Train_Orders  Train_Returns Train_Return_Rate  Test_Orders
+         REVERSE_PICKUP         789.0          789.0           100.00%            0
+             TECH_VISIT         476.0          180.0            37.82%            0
+                   NONE        6946.0          298.0             4.29%         1553
+              DEMO_DONE        1507.0            0.0             0.00%            0
+         INSTALL_BOOKED           0.0            0.0                 0          543
+           INSTALL_DONE        1437.0            0.0             0.00%            0
+
+================================================================================
+ 7. ORDER VALUE CHECK & OCTOBER 2025 GATEWAY ANOMALY
+================================================================================
+
+Formula: expected = list_price_inr * qty * (1 - discount_pct / 100)
+Ratio: order_value_inr / expected
+
+
+--- 7.1 Monthly Distribution of (order_value_inr / expected) ---
+  month  Orders  Mean  Median   Min   Max  Std Is_Oct_2025
+2025-04     698   1.0     1.0   1.0   1.0  0.0            
+2025-05     708   1.0     1.0   1.0   1.0  0.0            
+2025-06     721   1.0     1.0   1.0   1.0  0.0            
+2025-07     785   1.0     1.0   1.0   1.0  0.0            
+2025-08     759   1.0     1.0   1.0   1.0  0.0            
+2025-09     747   1.0     1.0   1.0   1.0  0.0            
+2025-10     748 100.0   100.0 100.0 100.0  0.0 >>> YES <<<
+2025-11     737   1.0     1.0   1.0   1.0  0.0            
+2025-12     723   1.0     1.0   1.0   1.0  0.0            
+2026-01     769   1.0     1.0   1.0   1.0  0.0            
+2026-02     710   1.0     1.0   1.0   1.0  0.0            
+2026-03     789   1.0     1.0   1.0   1.0  0.0            
+2026-04     760   1.0     1.0   1.0   1.0  0.0            
+2026-05     759   1.0     1.0   1.0   1.0  0.0            
+2026-06     742   1.0     1.0   1.0   1.0  0.0            
+
+--- 7.2 Comparison: October 2025 vs Other Months ---
+                    Period  Orders  Mean Ratio  Median Ratio  Min Ratio  Max Ratio  Std Ratio
+October 2025 (New Gateway)     748       100.0         100.0      100.0      100.0        0.0
+          All Other Months   10407         1.0           1.0        1.0        1.0        0.0
+
+--- 7.3 Test Dataset Order Value Ratio (Reference) ---
+  month  Orders  Mean  Median  Min  Max
+2026-07     668   1.0     1.0  1.0  1.0
+2026-08     733   1.0     1.0  1.0  1.0
+2026-09     695   1.0     1.0  1.0  1.0
+
+================================================================================
+ 8. DELIVERY NOTE TEXT AUDIT
+================================================================================
+
+
+--- 8.1 30 Sample Delivery Notes for RETURNED = 1 ---
+[01] Office address, weekdays only
+[02] Leave with security
+[03] Do not call, WhatsApp only
+[04] Customer requested morning slot
+[05] Ring twice
+[06] Gate code 5663, call before delivery
+[07] Office address, weekdays only
+[08] Fragile - handle with care
+[09] Third floor, no lift
+[10] Leave with security
+[11] Ring twice
+[12] Office address, weekdays only
+[13] Deliver to neighbour flat 5B if not home
+[14] Third floor, no lift
+[15] Third floor, no lift
+[16] Do not call, WhatsApp only
+[17] Call before delivery
+[18] Customer requested morning slot
+[19] Gate code 8673, call before delivery
+[20] Landmark: opposite HP petrol pump
+[21] Call before delivery
+[22] Third floor, no lift
+[23] Deliver to neighbour flat 8C if not home
+[24] Office address, weekdays only
+[25] Deliver after 6 pm
+[26] Landmark: opposite Big Bazaar
+[27] Do not call, WhatsApp only
+[28] Call before delivery
+[29] Deliver to neighbour flat 16B if not home
+[30] Gate code 7770, call before delivery
+
+--- 8.2 30 Sample Delivery Notes for RETURNED = 0 (Not Returned) ---
+[01] Landmark: opposite Reliance Fresh
+[02] Leave with security
+[03] Customer requested morning slot
+[04] Deliver after 6 pm
+[05] Landmark: opposite Axis Bank ATM
+[06] Leave with security
+[07] Landmark: opposite Big Bazaar
+[08] Call before delivery
+[09] Leave with security
+[10] Fragile - handle with care
+[11] Customer requested morning slot
+[12] Gate code 8429, call before delivery
+[13] Ring twice
+[14] Do not call, WhatsApp only
+[15] Leave with security
+[16] Third floor, no lift
+[17] Third floor, no lift
+[18] Customer requested morning slot
+[19] Fragile - handle with care
+[20] Gate code 6954, call before delivery
+[21] Deliver to neighbour flat 1A if not home
+[22] Office address, weekdays only
+[23] Leave with security
+[24] Ring twice
+[25] Office address, weekdays only
+[26] Landmark: opposite Metro pillar 112
+[27] Deliver after 6 pm
+[28] Gate code 1025, call before delivery
+[29] Call before delivery
+[30] Third floor, no lift
+
+--- 8.3 Most Common Words in Delivery Notes: Returned = 1 (Total Populated: 932) ---
+Word (Returned=1)  Frequency  % of Notes (Ret=1)
+             call        248               26.61
+           before        175               18.78
+         delivery        175               18.78
+              not        151               16.20
+             only        151               16.20
+          deliver        149               15.99
+             with        134               14.38
+         landmark         91                9.76
+         opposite         91                9.76
+             gate         86                9.23
+             code         86                9.23
+             ring         79                8.48
+            twice         79                8.48
+           office         78                8.37
+          address         78                8.37
+         weekdays         78                8.37
+         customer         77                8.26
+        requested         77                8.26
+          morning         77                8.26
+             slot         77                8.26
+
+--- 8.4 Most Common Words in Delivery Notes: Returned = 0 (Total Populated: 7471) ---
+Word (Returned=0)  Frequency  % of Notes (Ret=0)
+             call       1833               24.53
+              not       1305               17.47
+             with       1279               17.12
+          deliver       1273               17.04
+             only       1240               16.60
+           before       1215               16.26
+         delivery       1215               16.26
+               to        689                9.22
+        neighbour        688                9.21
+             flat        688                9.21
+               if        688                9.21
+             home        688                9.21
+          fragile        644                8.62
+           handle        644                8.62
+             care        644                8.62
+         landmark        642                8.59
+         opposite        642                8.59
+            leave        635                8.50
+         security        635                8.50
+           office        623                8.34
+
+--- 8.5 Top Content Words (Stopwords Excluded) Comparison ---
+ Rank Ret=1 Word  Ret=1 Count Ret=0 Word  Ret=0 Count
+    1       call          248       call         1833
+    2     before          175        not         1305
+    3   delivery          175    deliver         1273
+    4        not          151       only         1240
+    5       only          151     before         1215
+    6    deliver          149   delivery         1215
+    7   landmark           91  neighbour          688
+    8   opposite           91       flat          688
+    9       gate           86       home          688
+   10       code           86    fragile          644
+   11       ring           79     handle          644
+   12      twice           79       care          644
+   13     office           78   landmark          642
+   14    address           78   opposite          642
+   15   weekdays           78      leave          635
+
+================================================================================
+ 9. TRAIN VS TEST DRIFT AUDIT
+================================================================================
+
+
+--- 9.1 Payment Mode Distribution: Train vs Test ---
+payment_mode  Train Count  Train (%)  Test Count  Test (%)  Shift (% pts)
+ prepaid_upi         4150      37.20         782     37.31           0.11
+         cod         3355      30.08         644     30.73           0.65
+prepaid_card         2290      20.53         442     21.09           0.56
+         emi         1360      12.19         228     10.88          -1.31
+
+--- 9.2 Sales Channel Distribution: Train vs Test ---
+ sales_channel  Train Count  Train (%)  Test Count  Test (%)  Shift (% pts)
+           app         3613      32.39         730     34.83           2.44
+   marketplace         2906      26.05         581     27.72           1.67
+           web         2797      25.07         516     24.62          -0.45
+partner_outlet         1839      16.49         269     12.83          -3.66
+
+--- 9.3 Discount Pct Distribution: Summary Stats ---
+Dataset  Mean  Std  Min  25%  50% (Median)  75%  Max
+  Train  10.0 7.13    0  5.0           8.0 14.0   60
+   Test  10.2 7.20    0  5.0           9.0 14.0   51
+
+--- 9.4 Discount Pct Binned Distribution ---
+discount_pct  Train Count  Train (%)  Test Count  Test (%)  Shift (% pts)
+     (-1, 5]         3329      29.84         616     29.39          -0.45
+     (5, 10]         3614      32.40         667     31.82          -0.58
+    (10, 15]         2126      19.06         403     19.23           0.17
+    (15, 20]         1145      10.26         220     10.50           0.24
+    (20, 25]          497       4.46         103      4.91           0.45
+    (25, 30]          264       2.37          47      2.24          -0.13
+    (30, 50]          172       1.54          38      1.81           0.27
+   (50, 100]            8       0.07           2      0.10           0.03
+
+--- 9.5 Shield Member Share: Train vs Test ---
+shield_member  Train Count  Train (%)  Test Count  Test (%)  Shift (% pts)
+            N         8688      77.88        1633     77.91           0.03
+            Y         2467      22.12         463     22.09          -0.03
+
+================================================================================
+ 10. CUSTOMER HISTORY INTEGRITY CHECK
+================================================================================
+
+Integrity Rule: customer_prior_returns <= customer_prior_orders must always hold.
+
+
+--- 10.1 Integrity Violation Counts ---
+Dataset  Total Rows  Violations (returns > orders) Violation Rate (%) Complies Fully
+  Train       11155                              0            0.0000%            YES
+   Test        2096                              0            0.0000%            YES
+
+================================================================================
+ AUDIT COMPLETE
+================================================================================
+
+Full report saved to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\audit_output.txt

@@ -1,0 +1,60 @@
+
+================================================================================
+ KESTREL RETURNS: FINAL MODEL TRAINING, INTEGRITY CHECKS & TEST SCORING
+================================================================================
+
+Timestamp: 2026-10-08 10:26:33
+Loaded clean train data from: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data\processed\train_clean.csv (Total Rows: 10,504)
+
+--- Feature Set Verification ---
+Total Model Features: 22
+Explicitly Excluded Columns: ['order_id', 'returned', 'customer_age_days', 'signup_after_order']
+Confirmation of Exclusions:
+  - 'customer_age_days' in features? False (CONFIRMED EXCLUDED)
+  - 'signup_after_order' in features? False (CONFIRMED EXCLUDED)
+  - Categorical features (7): ['payment_mode', 'sales_channel', 'family', 'is_gift', 'shield_member', 'state', 'city']
+  - Numeric features (15): ['promised_delivery_days', 'qty', 'discount_pct', 'warranty_months', 'order_value_inr_fixed', 'list_price_inr', 'price_per_unit', 'missing_address', 'customer_prior_orders', 'customer_prior_returns', 'smoothed_customer_return_rate', 'days_since_launch', 'order_month', 'order_weekday', 'order_hour']
+
+Fitting Logistic Regression pipeline on all 10,504 training rows...
+Model fitting complete.
+Saved complete model pipeline to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\models\model.joblib
+
+Loaded clean test data from: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data\processed\test_clean.csv (Total Rows: 2,096)
+Saved predictions to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\predictions.csv
+
+--- Integrity Assertions Verification ---
+ALL ASSERTIONS PASSED:
+  [PASSED] Exactly 2,096 rows: True
+  [PASSED] Unique order_id per row: True
+  [PASSED] Order ID set equals sample_submission.csv: True
+  [PASSED] File columns match exactly ['order_id', 'score']: True
+  [PASSED] No NaN values: True
+  [PASSED] Scores strictly within [0, 1]: True
+
+--- Score Distribution Comparison: Test vs Out-of-Sample Predictions ---
+                                     Dataset  Order Count  Mean Score    Std    Min  25% (Q1)  50% (Median)  75% (Q3)    Max  Score >= 0.12 (Count) Score >= 0.12 (%)
+Out-of-Sample Backtest (Nov 2025 - Jun 2026)         5634      0.1136 0.1292 0.0039    0.0329        0.0675    0.1424 0.9817                   1706            30.28%
+       Test Set Predictions (Jul - Aug 2026)         2096      0.1112 0.1326 0.0054    0.0330        0.0666    0.1352 0.9829                    589            28.10%
+
+Share of orders with score >= 0.12:
+  - Out-of-sample predictions : 30.28% (1,706 of 5,634 orders)
+  - Test predictions          : 28.10% (589 of 2,096 orders)
+  - Difference                : -2.18 percentage points
+
+First 10 rows of predictions.csv:
+ order_id    score
+KO2610504 0.098974
+KO2610505 0.063022
+KO2610506 0.071129
+KO2610507 0.010270
+KO2610508 0.010895
+KO2610509 0.027594
+KO2610510 0.049466
+KO2610511 0.219812
+KO2610512 0.040957
+KO2610513 0.567520
+
+================================================================================
+ FINAL MODEL EXECUTION COMPLETE
+================================================================================
+

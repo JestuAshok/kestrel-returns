@@ -1,0 +1,182 @@
+
+================================================================================
+ KESTREL HOME APPLIANCES: OPERATIONAL EXPLANATIONS & DECISION AUDIT
+================================================================================
+
+Timestamp: 2026-10-07 14:58:42
+Loaded 2,096 test orders.
+
+--- Contradiction Audit Across All 2,096 Test Orders ---
+Total candidate reasons with |contribution| >= 0.10 where observed comparison contradicted model direction: 70
+All contradictory candidate reasons were suppressed from operational explanations.
+
+================================================================================
+ 1. EXPLANATIONS FOR 5 HIGHEST-SCORING TEST ORDERS
+================================================================================
+
+
+================================================================================
+ ORDER: KO2612155 | Category: Top High-Risk #1
+================================================================================
+ - Predicted Return Risk : 60% or more (Exact Probability: 0.9829)
+ - Risk Band             : Very high
+ - Recommended Action    : Call customer to confirm before dispatch
+ - Dispatch Profile      : Payment: cod | Product: Air Fryer | Shield: Y | Delivery Days: 5 | Value: Rs 5,979.08
+ - Factors Increasing Risk (reasons_up):
+     [+1] Customers with 3 or more prior returns: 61.3% were returned in past data (124 orders), against 9.1% for customers with zero prior returns (9,119 orders).
+     [+2] Cash-on-delivery orders: 18.8% were returned in past data (3,152 orders), against 8.3% for prepaid orders (7,352 orders).
+     [+3] Shield membership orders: 18.6% were returned in past data (2,327 orders), against 9.4% for non-member orders (8,177 orders).
+ - Factors Decreasing Risk (reasons_down):
+     (None qualified with |contribution| >= 0.10 and >=3% difference)
+
+================================================================================
+ ORDER: KO2611223 | Category: Top High-Risk #2
+================================================================================
+ - Predicted Return Risk : 60% or more (Exact Probability: 0.9645)
+ - Risk Band             : Very high
+ - Recommended Action    : Call customer to confirm before dispatch
+ - Dispatch Profile      : Payment: cod | Product: Air Fryer | Shield: Y | Delivery Days: 5 | Value: Rs 5,459.16
+ - Factors Increasing Risk (reasons_up):
+     [+1] Customers with 3 or more prior returns: 61.3% were returned in past data (124 orders), against 9.1% for customers with zero prior returns (9,119 orders).
+     [+2] Cash-on-delivery orders: 18.8% were returned in past data (3,152 orders), against 8.3% for prepaid orders (7,352 orders).
+     [+3] Discount of 16%: orders with 15% or higher discount had a 15.1% return rate in past data (2,276 orders), against 10.4% for orders under 15% discount (8,228 orders).
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ ORDER: KO2611540 | Category: Top High-Risk #3
+================================================================================
+ - Predicted Return Risk : 60% or more (Exact Probability: 0.9470)
+ - Risk Band             : Very high
+ - Recommended Action    : Call customer to confirm before dispatch
+ - Dispatch Profile      : Payment: cod | Product: Water Purifier | Shield: N | Delivery Days: 3 | Value: Rs 10,799.10
+ - Factors Increasing Risk (reasons_up):
+     [+1] Customers with 3 or more prior returns: 61.3% were returned in past data (124 orders), against 9.1% for customers with zero prior returns (9,119 orders).
+     [+2] Cash-on-delivery orders: 18.8% were returned in past data (3,152 orders), against 8.3% for prepaid orders (7,352 orders).
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ ORDER: KO2612307 | Category: Top High-Risk #4
+================================================================================
+ - Predicted Return Risk : 60% or more (Exact Probability: 0.9251)
+ - Risk Band             : Very high
+ - Recommended Action    : Call customer to confirm before dispatch
+ - Dispatch Profile      : Payment: cod | Product: Water Purifier | Shield: N | Delivery Days: 7 | Value: Rs 18,223.20
+ - Factors Increasing Risk (reasons_up):
+     [+1] Customers with 3 or more prior returns: 61.3% were returned in past data (124 orders), against 9.1% for customers with zero prior returns (9,119 orders).
+     [+2] Cash-on-delivery orders: 18.8% were returned in past data (3,152 orders), against 8.3% for prepaid orders (7,352 orders).
+     [+3] Promised delivery time of 7 days: orders with 6 or more delivery days had a 15.6% return rate in past data (3,997 orders), against 7.9% for 4 days or less (4,448 orders).
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ ORDER: KO2611909 | Category: Top High-Risk #5
+================================================================================
+ - Predicted Return Risk : 60% or more (Exact Probability: 0.9078)
+ - Risk Band             : Very high
+ - Recommended Action    : Call customer to confirm before dispatch
+ - Dispatch Profile      : Payment: prepaid_card | Product: Mixer Grinder | Shield: N | Delivery Days: 8 | Value: Rs 2,783.13
+ - Factors Increasing Risk (reasons_up):
+     [+1] Customers with 3 or more prior returns: 61.3% were returned in past data (124 orders), against 9.1% for customers with zero prior returns (9,119 orders).
+     [+2] Promised delivery time of 8 days: orders with 6 or more delivery days had a 15.6% return rate in past data (3,997 orders), against 7.9% for 4 days or less (4,448 orders).
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ 2. EXPLANATIONS FOR 3 RANDOM TEST ORDERS (SEED 7)
+================================================================================
+
+
+================================================================================
+ ORDER: KO2611709 | Category: Random Sample #1
+================================================================================
+ - Predicted Return Risk : 9% (Exact Probability: 0.0889)
+ - Risk Band             : Medium
+ - Recommended Action    : Dispatch as normal
+ - Dispatch Profile      : Payment: cod | Product: Air Fryer | Shield: N | Delivery Days: 5 | Value: Rs 4,731.09
+ - Factors Increasing Risk (reasons_up):
+     [+1] Cash-on-delivery orders: 18.8% were returned in past data (3,152 orders), against 8.3% for prepaid orders (7,352 orders).
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ ORDER: KO2612435 | Category: Random Sample #2
+================================================================================
+ - Predicted Return Risk : 6% (Exact Probability: 0.0594)
+ - Risk Band             : Low
+ - Recommended Action    : Dispatch as normal
+ - Dispatch Profile      : Payment: prepaid_upi | Product: Room Heater | Shield: N | Delivery Days: 7 | Value: Rs 1,819.09
+ - Factors Increasing Risk (reasons_up):
+     [+1] Promised delivery time of 7 days: orders with 6 or more delivery days had a 15.6% return rate in past data (3,997 orders), against 7.9% for 4 days or less (4,448 orders).
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ ORDER: KO2611727 | Category: Random Sample #3
+================================================================================
+ - Predicted Return Risk : 5% (Exact Probability: 0.0478)
+ - Risk Band             : Low
+ - Recommended Action    : Dispatch as normal
+ - Dispatch Profile      : Payment: prepaid_upi | Product: Mixer Grinder | Shield: N | Delivery Days: 7 | Value: Rs 3,119.22
+ - Factors Increasing Risk (reasons_up):
+     [+1] Promised delivery time of 7 days: orders with 6 or more delivery days had a 15.6% return rate in past data (3,997 orders), against 7.9% for 4 days or less (4,448 orders).
+     [+2] Discount of 22%: orders with 15% or higher discount had a 15.1% return rate in past data (2,276 orders), against 10.4% for orders under 15% discount (8,228 orders).
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ 3. EXPLANATIONS FOR 3 LOWEST-SCORING TEST ORDERS
+================================================================================
+
+
+================================================================================
+ ORDER: KO2612529 | Category: Lowest-Risk #1
+================================================================================
+ - Predicted Return Risk : 1% (Exact Probability: 0.0054)
+ - Risk Band             : Low
+ - Recommended Action    : Dispatch as normal
+ - Dispatch Profile      : Payment: prepaid_upi | Product: Ceiling Fan | Shield: N | Delivery Days: 3 | Value: Rs 3,429.02
+ - Factors Increasing Risk (reasons_up):
+     (None qualified with |contribution| >= 0.10 and >=3% difference)
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ ORDER: KO2610636 | Category: Lowest-Risk #2
+================================================================================
+ - Predicted Return Risk : 1% (Exact Probability: 0.0056)
+ - Risk Band             : Low
+ - Recommended Action    : Dispatch as normal
+ - Dispatch Profile      : Payment: prepaid_card | Product: Ceiling Fan | Shield: N | Delivery Days: 2 | Value: Rs 4,581.31
+ - Factors Increasing Risk (reasons_up):
+     (None qualified with |contribution| >= 0.10 and >=3% difference)
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ ORDER: KO2610563 | Category: Lowest-Risk #3
+================================================================================
+ - Predicted Return Risk : 1% (Exact Probability: 0.0056)
+ - Risk Band             : Low
+ - Recommended Action    : Dispatch as normal
+ - Dispatch Profile      : Payment: prepaid_upi | Product: Ceiling Fan | Shield: N | Delivery Days: 2 | Value: Rs 4,392.39
+ - Factors Increasing Risk (reasons_up):
+     (None qualified with |contribution| >= 0.10 and >=3% difference)
+ - Factors Decreasing Risk (reasons_down):
+     [-1] Non-Shield member orders: 9.4% were returned in past data (8,177 orders), against 18.6% for Shield member orders (2,327 orders).
+     [-2] Non-gift orders: 11.0% were returned in past data (9,778 orders), against 16.5% for gift orders (726 orders).
+
+================================================================================
+ OPERATIONAL EXPLANATION AUDIT COMPLETE
+================================================================================
+
+Report written to: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\docs\final_output.txt

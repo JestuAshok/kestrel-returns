@@ -3,7 +3,7 @@
  KESTREL RETURNS: FINAL MODEL TRAINING, INTEGRITY CHECKS & TEST SCORING
 ================================================================================
 
-Timestamp: 2026-10-08 10:26:33
+Timestamp: 2026-10-08 11:51:31
 Loaded clean train data from: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns\data\processed\train_clean.csv (Total Rows: 10,504)
 
 --- Feature Set Verification ---

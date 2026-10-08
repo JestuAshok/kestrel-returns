@@ -166,40 +166,43 @@ def main():
         print_subheader("Score Distribution Comparison: Test vs Out-of-Sample Predictions")
 
         oos_path = proc_dir / "oos_preds_lr.csv"
-        oos_df = pd.read_csv(oos_path)
-        oos_scores = oos_df["score"].values
+        if not oos_path.exists():
+            print("Drift comparison skipped: data/processed/oos_preds_lr.csv not found (run python src/backtest_lr.py to create it).")
+        else:
+            oos_df = pd.read_csv(oos_path)
+            oos_scores = oos_df["score"].values
 
-        def summarize_scores(arr, name):
-            count_12 = int(np.sum(arr >= 0.12))
-            pct_12 = np.mean(arr >= 0.12) * 100
-            return {
-                "Dataset": name,
-                "Order Count": len(arr),
-                "Mean Score": round(float(np.mean(arr)), 4),
-                "Std": round(float(np.std(arr)), 4),
-                "Min": round(float(np.min(arr)), 4),
-                "25% (Q1)": round(float(np.percentile(arr, 25)), 4),
-                "50% (Median)": round(float(np.median(arr)), 4),
-                "75% (Q3)": round(float(np.percentile(arr, 75)), 4),
-                "Max": round(float(np.max(arr)), 4),
-                "Score >= 0.12 (Count)": count_12,
-                "Score >= 0.12 (%)": f"{pct_12:.2f}%",
-            }
+            def summarize_scores(arr, name):
+                count_12 = int(np.sum(arr >= 0.12))
+                pct_12 = np.mean(arr >= 0.12) * 100
+                return {
+                    "Dataset": name,
+                    "Order Count": len(arr),
+                    "Mean Score": round(float(np.mean(arr)), 4),
+                    "Std": round(float(np.std(arr)), 4),
+                    "Min": round(float(np.min(arr)), 4),
+                    "25% (Q1)": round(float(np.percentile(arr, 25)), 4),
+                    "50% (Median)": round(float(np.median(arr)), 4),
+                    "75% (Q3)": round(float(np.percentile(arr, 75)), 4),
+                    "Max": round(float(np.max(arr)), 4),
+                    "Score >= 0.12 (Count)": count_12,
+                    "Score >= 0.12 (%)": f"{pct_12:.2f}%",
+                }
 
-        comparison_df = pd.DataFrame([
-            summarize_scores(oos_scores, "Out-of-Sample Backtest (Nov 2025 - Jun 2026)"),
-            summarize_scores(test_scores, "Test Set Predictions (Jul - Aug 2026)"),
-        ])
-        print(format_table(comparison_df))
+            comparison_df = pd.DataFrame([
+                summarize_scores(oos_scores, "Out-of-Sample Backtest (Nov 2025 - Jun 2026)"),
+                summarize_scores(test_scores, "Test Set Predictions (Jul - Aug 2026)"),
+            ])
+            print(format_table(comparison_df))
 
-        oos_share_12 = np.mean(oos_scores >= 0.12) * 100
-        test_share_12 = np.mean(test_scores >= 0.12) * 100
-        diff_share_12 = test_share_12 - oos_share_12
+            oos_share_12 = np.mean(oos_scores >= 0.12) * 100
+            test_share_12 = np.mean(test_scores >= 0.12) * 100
+            diff_share_12 = test_share_12 - oos_share_12
 
-        print(f"\nShare of orders with score >= 0.12:")
-        print(f"  - Out-of-sample predictions : {oos_share_12:.2f}% ({int(np.sum(oos_scores >= 0.12)):,} of {len(oos_scores):,} orders)")
-        print(f"  - Test predictions          : {test_share_12:.2f}% ({int(np.sum(test_scores >= 0.12)):,} of {len(test_scores):,} orders)")
-        print(f"  - Difference                : {diff_share_12:+.2f} percentage points")
+            print(f"\nShare of orders with score >= 0.12:")
+            print(f"  - Out-of-sample predictions : {oos_share_12:.2f}% ({int(np.sum(oos_scores >= 0.12)):,} of {len(oos_scores):,} orders)")
+            print(f"  - Test predictions          : {test_share_12:.2f}% ({int(np.sum(test_scores >= 0.12)):,} of {len(test_scores):,} orders)")
+            print(f"  - Difference                : {diff_share_12:+.2f} percentage points")
 
         print("\nFirst 10 rows of predictions.csv:")
         print(format_table(predictions_df.head(10)))

@@ -153,6 +153,8 @@ Open the following URL in your web browser:
   This project supports Python 3.10 through 3.14. If package installations fail due to pinned wheels on older Python versions, ensure you are using the version ranges specified in `requirements.txt` (e.g. `numpy>=1.26,<3`, `scikit-learn>=1.5,<2`, `scipy>=1.14,<2`).
 - **Test Failures in `test_predict_matches_predictions_csv_for_20_orders`**:
   Ensure `python src/final_model.py` has been executed beforehand so `predictions.csv` and `models/model.joblib` reflect the exact same model weights.
+- **Drift Comparison Output**:
+  The drift comparison in `src/final_model.py` is optional; it requires `python src/backtest_lr.py` to create `data/processed/oos_preds_lr.csv`.
 
 ---
 

@@ -56,14 +56,26 @@ Follow these steps in order to set up the environment, prepare data, train the p
 
 ### Step 3: Copy the Pack's CSVs into `data/`
 
-Place the 5 competition / pack CSV files directly into the `data/` directory:
+Create the `data/` directory and place the 5 competition / pack CSV files directly into it:
 - `train.csv`
 - `test_unlabelled.csv`
 - `customers.csv`
 - `products.csv`
 - `sample_submission.csv`
 
-Commands to copy (replace `<pack_dir>` with the path to the extracted pack folder):
+*(Note: `data/processed/` and `models/` directory creation is automatically handled by the scripts).*
+
+First create the `data/` directory:
+- **Windows (PowerShell and Command Prompt)**:
+  ```cmd
+  mkdir data
+  ```
+- **macOS / Linux**:
+  ```bash
+  mkdir -p data
+  ```
+
+Then copy the files (replace `<pack_dir>` with the path to the extracted pack folder):
 - **Windows (PowerShell)**:
   ```powershell
   Copy-Item "<pack_dir>\train.csv", "<pack_dir>\test_unlabelled.csv", "<pack_dir>\customers.csv", "<pack_dir>\products.csv", "<pack_dir>\sample_submission.csv" -Destination "data\"

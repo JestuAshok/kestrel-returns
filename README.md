@@ -1,6 +1,7 @@
 # Kestrel Returns Risk Decision Engine
 
 Finding: calling flagged orders before dispatch saves about Rs 11,000 a month at 700 orders/month; holding them loses money; 95% accuracy is not reachable (best about 89.5% vs 88.7% for 'never returned').
+Model quality: pooled out-of-sample ROC-AUC 0.776 over 8 monthly tests (expected on the hidden test: about 0.77, range 0.73 to 0.81).
 
 Operational machine learning pipeline and dispatch-time decision engine for Kestrel Home Appliances. Identifies orders with elevated return probability prior to warehouse dispatch and provides plain-English operational explanations for customer service agents.
 

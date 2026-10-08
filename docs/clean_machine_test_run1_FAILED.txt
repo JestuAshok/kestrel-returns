@@ -1,0 +1,3 @@
+Run 1: failed at README Step 3 (copy the pack CSVs) because data/ did not exist on a fresh clone (data/ is git-ignored and the README did not say to create it).
+Error: Copy-Item : The directory name is invalid. (System.IO.IOException)
+Fixed in commit e40eef9 (README now says to run mkdir data first).

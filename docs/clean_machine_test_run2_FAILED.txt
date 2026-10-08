@@ -1,0 +1,2 @@
+Run 2: failed at README Step 6 (python src/final_model.py) with FileNotFoundError for data/processed/oos_preds_lr.csv. That file is created by src/backtest_lr.py, which the README does not list. The model and predictions.csv had already been written; the crash was in the optional drift-comparison printout.
+Fixed in commit 0a99bce (drift comparison made optional; predictions.csv unchanged, max score difference 0.0, 2096 rows).

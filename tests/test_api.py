@@ -130,3 +130,103 @@ def test_no_response_text_contains_hold():
 
         action = data.get("recommended_action", "").lower()
         assert "hold" not in action, f"Found forbidden word 'hold' in recommended_action: {action}"
+
+
+def test_bad_pincode_returns_422():
+    """(6) Bad pincode 'sdddgaig' returns 422 with plain-English message."""
+    payload = {
+        "order_id": "TEST_BAD_PIN",
+        "order_placed_at": "2026-07-01 10:00",
+        "customer_id": "KC101160",
+        "sku": "KH-WP-01",
+        "sales_channel": "web",
+        "payment_mode": "prepaid_upi",
+        "discount_pct": 10.0,
+        "qty": 1,
+        "order_value_inr": 3500.0,
+        "promised_delivery_days": 5,
+        "delivery_pincode": "sdddgaig",
+        "is_gift": "N",
+        "customer_prior_orders": 2,
+        "customer_prior_returns": 0,
+    }
+    response = client.post("/predict", json=payload)
+    assert response.status_code == 422
+    data = response.json()
+    assert "detail" in data
+    assert "Delivery pincode must be 6 digits (use 000000 if no address was captured)." in data["detail"]
+
+
+def test_prior_returns_exceeding_prior_orders_returns_422():
+    """(7) Customer prior returns > customer prior orders returns 422."""
+    payload = {
+        "order_id": "TEST_INVALID_RETURNS",
+        "order_placed_at": "2026-07-01 10:00",
+        "customer_id": "KC101160",
+        "sku": "KH-WP-01",
+        "sales_channel": "web",
+        "payment_mode": "prepaid_upi",
+        "discount_pct": 10.0,
+        "qty": 1,
+        "order_value_inr": 3500.0,
+        "promised_delivery_days": 5,
+        "delivery_pincode": "110973",
+        "is_gift": "N",
+        "customer_prior_orders": 2,
+        "customer_prior_returns": 5,
+    }
+    response = client.post("/predict", json=payload)
+    assert response.status_code == 422
+    data = response.json()
+    assert "detail" in data
+    assert "Customer prior returns cannot exceed customer prior orders." in data["detail"]
+
+
+def test_validation_constraints():
+    """(8) Range constraints for discount, qty, delivery days, order value, and gift flag."""
+    base_payload = {
+        "order_id": "TEST_LIMITS",
+        "order_placed_at": "2026-07-01 10:00",
+        "customer_id": "KC101160",
+        "sku": "KH-WP-01",
+        "sales_channel": "web",
+        "payment_mode": "prepaid_upi",
+        "discount_pct": 10.0,
+        "qty": 1,
+        "order_value_inr": 3500.0,
+        "promised_delivery_days": 5,
+        "delivery_pincode": "110973",
+        "is_gift": "N",
+        "customer_prior_orders": 2,
+        "customer_prior_returns": 1,
+    }
+
+    # Discount > 90
+    p = dict(base_payload, discount_pct=95.0)
+    res = client.post("/predict", json=p)
+    assert res.status_code == 422
+    assert "Discount percentage must be between 0 and 90." in res.json()["detail"]
+
+    # Qty > 20
+    p = dict(base_payload, qty=25)
+    res = client.post("/predict", json=p)
+    assert res.status_code == 422
+    assert "Quantity must be between 1 and 20." in res.json()["detail"]
+
+    # Delivery days > 30
+    p = dict(base_payload, promised_delivery_days=35)
+    res = client.post("/predict", json=p)
+    assert res.status_code == 422
+    assert "Promised delivery days must be between 1 and 30." in res.json()["detail"]
+
+    # Order value <= 0
+    p = dict(base_payload, order_value_inr=0.0)
+    res = client.post("/predict", json=p)
+    assert res.status_code == 422
+    assert "Order value (INR) must be greater than 0." in res.json()["detail"]
+
+    # Invalid gift flag
+    p = dict(base_payload, is_gift="MAYBE")
+    res = client.post("/predict", json=p)
+    assert res.status_code == 422
+    assert "Gift flag must be 'Y' or 'N'." in res.json()["detail"]

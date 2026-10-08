@@ -383,12 +383,15 @@
 
     .error-panel {
       background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #fca5a5;
-      padding: 1rem;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #ef4444;
+      padding: 0.85rem 1rem;
       border-radius: 0.5rem;
       font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 1.45;
       display: none;
+      margin-top: 1rem;
     }
 
     .empty-placeholder {
@@ -437,9 +440,7 @@
         </button>
       </div>
 
-      <div id="errorBox" class="error-panel"></div>
-
-      <form id="orderForm">
+      <form id="orderForm" novalidate>
         <div class="form-grid">
           <div class="form-group">
             <label for="order_id">Order ID (optional)</label>
@@ -480,20 +481,20 @@
 
           <div class="form-group">
             <label for="order_value_inr">Order Value (INR)</label>
-            <input type="number" id="order_value_inr" name="order_value_inr" step="0.01" value="3521.76" required>
+            <input type="number" id="order_value_inr" name="order_value_inr" step="0.01" min="0.01" value="3521.76" required>
           </div>
           <div class="form-group">
             <label for="discount_pct">Discount %</label>
-            <input type="number" id="discount_pct" name="discount_pct" step="0.1" value="13.0" required>
+            <input type="number" id="discount_pct" name="discount_pct" step="0.1" min="0" max="90" value="13.0" required>
           </div>
 
           <div class="form-group">
             <label for="qty">Quantity</label>
-            <input type="number" id="qty" name="qty" min="1" value="1" required>
+            <input type="number" id="qty" name="qty" min="1" max="20" value="1" required>
           </div>
           <div class="form-group">
             <label for="promised_delivery_days">Delivery Days</label>
-            <input type="number" id="promised_delivery_days" name="promised_delivery_days" min="1" max="14" value="7" required>
+            <input type="number" id="promised_delivery_days" name="promised_delivery_days" min="1" max="30" value="7" required>
           </div>
 
           <div class="form-group">
@@ -517,6 +518,8 @@
             <input type="number" id="customer_prior_returns" name="customer_prior_returns" min="0" value="1" required>
           </div>
         </div>
+
+        <div id="errorBox" class="error-panel"></div>
 
         <div class="button-row">
           <button id="btnSubmit" class="btn-primary" type="submit">
@@ -660,7 +663,11 @@
 
     function showError(msg) {
       const box = document.getElementById('errorBox');
-      box.textContent = msg;
+      if (typeof msg === 'object' && msg !== null) {
+        box.textContent = Array.isArray(msg) ? msg.join(' ') : JSON.stringify(msg);
+      } else {
+        box.textContent = msg;
+      }
       box.style.display = 'block';
     }
 

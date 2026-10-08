@@ -11,14 +11,16 @@ Description:
       - GET /: Serves the operational web interface.
 """
 
+import re
 from pathlib import Path
 from typing import Optional, Union, List, Dict, Any
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from src.prepare import build_features
 from src.reasons import explain
@@ -28,6 +30,71 @@ app = FastAPI(
     description="Operational return risk scoring and explainability for warehouse dispatch.",
     version="1.0.0",
 )
+
+FIELD_LABELS: Dict[str, str] = {
+    "order_id": "order ID",
+    "order_placed_at": "order date",
+    "customer_id": "customer ID",
+    "sku": "product SKU",
+    "sales_channel": "sales channel",
+    "payment_mode": "payment mode",
+    "discount_pct": "discount percentage",
+    "qty": "quantity",
+    "order_value_inr": "order value (INR)",
+    "promised_delivery_days": "promised delivery days",
+    "delivery_pincode": "delivery pincode",
+    "is_gift": "gift status",
+    "customer_prior_orders": "customer prior orders",
+    "customer_prior_returns": "customer prior returns",
+}
+
+
+@app.exception_handler(RequestValidationError)
+def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    missing_fields: List[str] = []
+    other_messages: List[str] = []
+
+    for err in errors:
+        err_type = str(err.get("type", ""))
+        loc = err.get("loc", ())
+        field_name = str(loc[-1]) if len(loc) > 1 else ""
+        raw_msg = str(err.get("msg", ""))
+
+        if err_type == "missing":
+            label = FIELD_LABELS.get(field_name, field_name.replace("_", " "))
+            if label not in missing_fields:
+                missing_fields.append(label)
+        elif err_type == "json_invalid":
+            msg = "Invalid JSON request body."
+            if msg not in other_messages:
+                other_messages.append(msg)
+        elif "Value error," in raw_msg:
+            clean = raw_msg.split("Value error,", 1)[-1].strip()
+            if clean and clean not in other_messages:
+                other_messages.append(clean)
+        elif err_type.startswith("string_pattern_mismatch") and field_name == "delivery_pincode":
+            msg = "Delivery pincode must be 6 digits (use 000000 if no address was captured)."
+            if msg not in other_messages:
+                other_messages.append(msg)
+        elif "parsing" in err_type or "type_error" in err_type:
+            label = FIELD_LABELS.get(field_name, field_name.replace("_", " "))
+            msg = f"Invalid value for {label}."
+            if msg not in other_messages:
+                other_messages.append(msg)
+        else:
+            clean = raw_msg.split("Value error,", 1)[-1].strip()
+            if clean and clean not in other_messages:
+                other_messages.append(clean)
+
+    messages: List[str] = []
+    if missing_fields:
+        messages.append(f"Please fill in: {', '.join(missing_fields)}.")
+    messages.extend(other_messages)
+
+    sentence = " ".join(messages).strip() if messages else "Invalid request parameters."
+    return JSONResponse(status_code=422, content={"detail": sentence})
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
@@ -64,14 +131,78 @@ class OrderPayload(BaseModel):
     sku: str = Field(..., description="Product SKU (e.g. KH-IC-03)")
     sales_channel: str = Field(..., description="Sales channel (app, web, marketplace, partner_outlet)")
     payment_mode: str = Field(..., description="Payment mode (cod, prepaid_upi, prepaid_card, emi)")
-    discount_pct: float = Field(..., description="Discount percentage applied (0 to 100)")
-    qty: int = Field(..., description="Quantity ordered (must be >= 1)")
-    order_value_inr: float = Field(..., description="Order total in INR")
-    promised_delivery_days: int = Field(..., description="Promised delivery timeline in days")
+    discount_pct: float = Field(..., description="Discount percentage applied (0 to 90)")
+    qty: int = Field(..., description="Quantity ordered (1 to 20)")
+    order_value_inr: float = Field(..., description="Order total in INR (must be > 0)")
+    promised_delivery_days: int = Field(..., description="Promised delivery timeline in days (1 to 30)")
     delivery_pincode: str = Field(..., description="Delivery pincode (6 digits)")
-    is_gift: Union[str, bool] = Field(..., description="Gift flag ('Y', 'N', True, False)")
+    is_gift: str = Field(..., description="Gift flag ('Y' or 'N')")
     customer_prior_orders: int = Field(..., description="Number of prior orders placed by customer")
     customer_prior_returns: int = Field(..., description="Number of prior returns recorded for customer")
+
+    @field_validator("delivery_pincode")
+    @classmethod
+    def validate_delivery_pincode(cls, v: Any) -> str:
+        s = str(v).strip()
+        if not re.match(r"^[0-9]{6}$", s):
+            raise ValueError("Delivery pincode must be 6 digits (use 000000 if no address was captured).")
+        return s
+
+    @field_validator("discount_pct")
+    @classmethod
+    def validate_discount_pct(cls, v: float) -> float:
+        if not (0.0 <= v <= 90.0):
+            raise ValueError("Discount percentage must be between 0 and 90.")
+        return v
+
+    @field_validator("qty")
+    @classmethod
+    def validate_qty(cls, v: int) -> int:
+        if not (1 <= v <= 20):
+            raise ValueError("Quantity must be between 1 and 20.")
+        return v
+
+    @field_validator("promised_delivery_days")
+    @classmethod
+    def validate_promised_delivery_days(cls, v: int) -> int:
+        if not (1 <= v <= 30):
+            raise ValueError("Promised delivery days must be between 1 and 30.")
+        return v
+
+    @field_validator("order_value_inr")
+    @classmethod
+    def validate_order_value_inr(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("Order value (INR) must be greater than 0.")
+        return v
+
+    @field_validator("is_gift")
+    @classmethod
+    def validate_is_gift(cls, v: Any) -> str:
+        s = str(v).strip()
+        if s not in {"Y", "N"}:
+            raise ValueError("Gift flag must be 'Y' or 'N'.")
+        return s
+
+    @field_validator("customer_prior_orders")
+    @classmethod
+    def validate_prior_orders(cls, v: int) -> int:
+        if v < 0:
+            raise ValueError("Customer prior orders cannot be negative.")
+        return v
+
+    @field_validator("customer_prior_returns")
+    @classmethod
+    def validate_prior_returns(cls, v: int) -> int:
+        if v < 0:
+            raise ValueError("Customer prior returns cannot be negative.")
+        return v
+
+    @model_validator(mode="after")
+    def validate_returns_le_orders(self):
+        if self.customer_prior_returns > self.customer_prior_orders:
+            raise ValueError("Customer prior returns cannot exceed customer prior orders.")
+        return self
 
 
 class PredictionResponse(BaseModel):

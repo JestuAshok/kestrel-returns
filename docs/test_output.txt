@@ -1,20 +1,23 @@
-============================= test session starts =============================
+﻿============================= test session starts =============================
 platform win32 -- Python 3.14.0, pytest-9.0.3, pluggy-1.6.0 -- C:\Python314\python.exe
 cachedir: .pytest_cache
 rootdir: C:\Users\jestu\.gemini\antigravity-ide\scratch\kestrel-returns
 plugins: anyio-4.12.0, langsmith-0.8.8, asyncio-1.4.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collecting ... collected 5 items
+collecting ... collected 8 items
 
-tests/test_api.py::test_health PASSED                                    [ 20%]
-tests/test_api.py::test_predict_matches_predictions_csv_for_20_orders PASSED [ 40%]
-tests/test_api.py::test_bad_input_returns_422 PASSED                     [ 60%]
-tests/test_api.py::test_unknown_customer_returns_422 PASSED              [ 80%]
-tests/test_api.py::test_no_response_text_contains_hold PASSED            [100%]
+tests/test_api.py::test_health PASSED                                    [ 12%]
+tests/test_api.py::test_predict_matches_predictions_csv_for_20_orders PASSED [ 25%]
+tests/test_api.py::test_bad_input_returns_422 PASSED                     [ 37%]
+tests/test_api.py::test_unknown_customer_returns_422 PASSED              [ 50%]
+tests/test_api.py::test_no_response_text_contains_hold PASSED            [ 62%]
+tests/test_api.py::test_bad_pincode_returns_422 PASSED                   [ 75%]
+tests/test_api.py::test_prior_returns_exceeding_prior_orders_returns_422 PASSED [ 87%]
+tests/test_api.py::test_validation_constraints PASSED                    [100%]
 
 ============================== warnings summary ===============================
 ..\..\..\..\AppData\Roaming\Python\Python314\site-packages\starlette\_utils.py:40: 10 warnings
-tests/test_api.py: 2 warnings
+tests/test_api.py: 17 warnings
   C:\Users\jestu\AppData\Roaming\Python\Python314\site-packages\starlette\_utils.py:40: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
     return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
 
@@ -26,4 +29,4 @@ tests/test_api.py: 2 warnings
     is_coroutine = asyncio.iscoroutinefunction(dependant.call)
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================= 5 passed, 16 warnings in 4.08s ========================
+======================= 8 passed, 31 warnings in 4.31s ========================
